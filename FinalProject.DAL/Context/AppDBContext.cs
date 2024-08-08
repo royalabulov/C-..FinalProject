@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Context
 {
-	public class AppDBContext : IdentityDbContext<AppUser, AppRole, string>
+	public class AppDBContext : IdentityDbContext<AppUser, AppRole, int>
 	{
 		public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
 		{ }

@@ -1,17 +1,27 @@
+using FinalProject.BLL;
 using FinalProject.DAL.Context;
 using FinalProject.Domain.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
+var Configuration = builder.Configuration;
 
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+
+services.BusinessLogicInjection();
+
 
 
 services.AddIdentity<AppUser, AppRole>(op =>
@@ -25,14 +35,59 @@ services.AddIdentity<AppUser, AppRole>(op =>
 }).AddEntityFrameworkStores<AppDBContext>().AddDefaultTokenProviders();
 
 
-services.ConfigureApplicationCookie((configure) =>
+services.AddSwaggerGen(c =>
 {
-	configure.Events.OnRedirectToLogin = context =>
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "FinalProject.API", Version = "v1" });
+	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
-		context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-		return Task.CompletedTask;
-	};
+		In = ParameterLocation.Header,
+		Description = "Please insert JWT with Bearer into field",
+		Name = "Authorization",
+		Type = SecuritySchemeType.Http,
+		Scheme = "Bearer"
+	});
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+		{
+			new OpenApiSecurityScheme
+				{
+				   Reference = new OpenApiReference
+				   {
+				      Type = ReferenceType.SecurityScheme,
+					  Id = "Bearer"
+				   }
+			},
+			new string[] { }
+	    }
+	});
+});
 
+services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+	o.Events = new JwtBearerEvents
+	{
+		OnAuthenticationFailed = context =>
+		{
+
+			return Task.CompletedTask;
+		}
+	};
+	o.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidIssuer = Configuration["AppSettings:ValidIssuer"],
+		ValidAudience = Configuration["AppSettings:ValidAudience"],
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:Secret"])),
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ClockSkew = TimeSpan.Zero
+
+	};
 });
 
 

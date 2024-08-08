@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL
 {
-	public class DataAccessDependencyInjection
+	public static class DataAccessDependencyInjection
 	{
-		public DataAccessDependencyInjection(IServiceCollection services, IConfiguration configuration)
+		public static void DataAccessDependencyInjectionMethod(this IServiceCollection services, IConfiguration configuration)
 		{
 
 			services.AddDbContext<AppDBContext>(options =>

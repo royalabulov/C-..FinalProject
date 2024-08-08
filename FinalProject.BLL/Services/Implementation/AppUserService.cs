@@ -87,7 +87,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getUserId = await userManager.FindByIdAsync(id.ToString());///???
+				var getUserId = await userManager.FindByIdAsync(id.ToString());
 				if(getUserId == null)
 				{
 					response.Failure("Id not found", 404);
