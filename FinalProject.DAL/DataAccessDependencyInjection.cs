@@ -19,7 +19,7 @@ namespace FinalProject.DAL
 
 			services.AddDbContext<AppDBContext>(options =>
 			{
-				options.UseSqlServer(configuration.GetConnectionString("Default"));
+				options.UseSqlServer(configuration.GetConnectionString("FinalProjectDB"));
 
 			});
 

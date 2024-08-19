@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FinalProject.Domain.Entites;
+using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +27,12 @@ namespace FinalProject.Domain.Entities
 		public int CategoryId {  get; set; }
 		public Category Category { get; set; }
 
+
+		//one to one 
+		public Advertising Advertising { get; set; }
+
+		//one to one
+		public WishList WishList { get; set; }
 
 	}
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using FinalProject.BLL.Models.DTOs.LoginDTOs;
+using FinalProject.BLL.Models.Exception.GenericResponseApi;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,6 +12,8 @@ namespace FinalProject.BLL.Services.Interface
 {
 	public interface IAccountService
 	{
-      
+		Task<LoginResponseDTO> Login(LoginCreateDTO login,IConfiguration configuration);
+
+		Task<GenericResponseApi<bool>> Logout();
 	}
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories
 {
-	public class CompanyRepository:GenericRepository<Company>,ICompanyRepository
+	public class CompanyRepository:GenericRepositoryApi<Company>,ICompanyRepository
 	{
 		private readonly AppDBContext context;
 

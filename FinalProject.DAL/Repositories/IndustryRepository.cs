@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories
 {
-	public class IndustryRepository :GenericRepository<Industry>,IIndustryRepository 
+	public class IndustryRepository :GenericRepositoryApi<Industry>,IIndustryRepository 
 	{
 		private readonly AppDBContext context;
 

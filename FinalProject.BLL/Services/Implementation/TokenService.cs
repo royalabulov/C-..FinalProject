@@ -25,7 +25,7 @@ namespace FinalProject.BLL.Services.Implementation
 					issuer: configuration["AppSettings:ValidIssuer"],
 					audience: configuration["AppSettings:ValidAudience"],
 					claims: new List<Claim> {
-					new Claim("userName",request.Email),
+					new Claim(ClaimTypes.Email,request.Email),
 
 					},
 					notBefore: dateTimeNow,

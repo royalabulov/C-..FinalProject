@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FinalProject.Domain.Entites;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,11 @@ namespace FinalProject.Domain.Entities
 {
 	public class AppUser : IdentityUser<int>
 	{
+		//one to one
+		public Company Company { get; set; }
 
+		//one to one
+		public VacantProfile VacantProfile { get; set; }
+		
 	}
 }

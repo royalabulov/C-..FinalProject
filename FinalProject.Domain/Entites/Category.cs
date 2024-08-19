@@ -13,5 +13,7 @@ namespace FinalProject.Domain.Entities
 		//one to many
         public ICollection<Vacancy> Vacancy { get; set; }
 
+
+
 	}
 }

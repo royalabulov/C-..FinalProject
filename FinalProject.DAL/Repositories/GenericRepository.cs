@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories
 {
-	public class GenericRepository<T> : IGenericRepository<T> where T : class
+	public class GenericRepositoryApi<T> : IGenericRepository<T> where T : class
 	{
 		private readonly AppDBContext context;
 		private readonly DbSet<T> table;
-		public GenericRepository(AppDBContext context)
+		public GenericRepositoryApi(AppDBContext context)
         {
 			this.context = context;
 			table = context.Set<T>();

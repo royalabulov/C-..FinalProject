@@ -1,4 +1,5 @@
 using FinalProject.BLL;
+using FinalProject.DAL;
 using FinalProject.DAL.Context;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,7 +22,8 @@ services.AddSwaggerGen();
 
 
 services.BusinessLogicInjection();
-
+services.DataAccessDependencyInjectionMethod(Configuration);
+services.AddControllers();
 
 
 services.AddIdentity<AppUser, AppRole>(op =>
