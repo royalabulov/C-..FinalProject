@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Services.Implementation
 {
-	public class AccountService : IAccountService
+	public class LoginService : ILoginService
 	{
 		private readonly SignInManager<AppUser> signInManager;
 		private readonly ITokenService tokenService;
 
-		public AccountService(SignInManager<AppUser> signInManager,ITokenService tokenService)
+		public LoginService(SignInManager<AppUser> signInManager,ITokenService tokenService)
         {
 			this.signInManager = signInManager;
 			this.tokenService = tokenService;
@@ -33,7 +33,7 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				if (string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password))
 				{
-					//response.Failure("Email or Password is null");
+					//response.Failure("Email or Password is null");	
 					throw new ArgumentNullException(nameof(login));
 				}
 
@@ -55,7 +55,8 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			catch (Exception ex)
 			{
-				throw new ArgumentNullException(nameof(login));
+				Console.WriteLine($"An error occurred: {ex.Message}");
+				throw;
 			}
 			return response;
 		}

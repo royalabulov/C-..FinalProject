@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FinalProject.BLL.Models.DTOs.AppRoleDTOs;
-using FinalProject.BLL.Models.DTOs.AppUserDTOs;
+using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,13 +15,13 @@ namespace FinalProject.BLL.Mappers
 		public Mapper()
 		{
 			//USER
-			CreateMap<AppUser,AppUserGetDTO>().ReverseMap();
-			CreateMap<AppUser,AppUserUpdateDTO>();
-			CreateMap<AppUser, AppUserCreateDTO>().ForMember(m=>m.Email,op=>op.MapFrom(mf=>mf.UserName)).ReverseMap();//
+			CreateMap<AppUser, AllUserGetDTO>().ReverseMap();
+			CreateMap<AppUser, UserUpdateDTO>();
+			CreateMap<UserCreateDTO,AppUser>().ForMember(m => m.UserName, op => op.MapFrom(mf => mf.Email)).ReverseMap();//
 
 
 			//ROLE
-			CreateMap<AppRole,AppRoleGetDTO>().ReverseMap();
+			CreateMap<AppRole, AppRoleGetDTO>().ReverseMap();
 			CreateMap<AppRole, AppRoleUpdateDTO>().ReverseMap();
 		}
 	}

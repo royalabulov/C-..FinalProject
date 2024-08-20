@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FinalProject.BLL.Mappers;
 using FinalProject.BLL.Services.Implementation;
 using FinalProject.BLL.Services.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +15,12 @@ namespace FinalProject.BLL
 	{
 		public static void BusinessLogicInjection(this IServiceCollection services)
 		{
-			services.AddAutoMapper(typeof(Mapper));
+			services.AddAutoMapper(typeof(IMapperNavigate));
 
 			services.AddScoped<IAppRoleService, AppRoleService>();
-			services.AddScoped<IAppUserService, AppUserService>();
+			services.AddScoped<IRegisterService, RegisterService>();
+			services.AddScoped<ILoginService, LoginService>();
+			services.AddScoped<ITokenService, TokenService>();
 			
 		}
 	}

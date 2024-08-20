@@ -18,18 +18,20 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			SymmetricSecurityKey symmetricSecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["AppSettings:Secret"]));
 
-			var dateTimeNow = DateTime.Now;
+			var dateTimeNow = DateTime.UtcNow;
 			int expireMinute = int.Parse(configuration["AppSettings:Expire"]);
+
+			var notBefore = dateTimeNow;
+			var expires = notBefore.Add(TimeSpan.FromMinutes(expireMinute));
 
 			JwtSecurityToken jwt = new JwtSecurityToken(
 					issuer: configuration["AppSettings:ValidIssuer"],
 					audience: configuration["AppSettings:ValidAudience"],
 					claims: new List<Claim> {
 					new Claim(ClaimTypes.Email,request.Email),
-
+					
 					},
-					notBefore: dateTimeNow,
-					expires: dateTimeNow.Add(TimeSpan.FromMinutes(expireMinute)),
+				    expires: expires,
 					signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256)
 				);
 

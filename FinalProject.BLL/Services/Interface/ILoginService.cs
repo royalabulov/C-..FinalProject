@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Services.Interface
 {
-	public interface IAccountService
+	public interface ILoginService
 	{
 		Task<LoginResponseDTO> Login(LoginCreateDTO login,IConfiguration configuration);
 

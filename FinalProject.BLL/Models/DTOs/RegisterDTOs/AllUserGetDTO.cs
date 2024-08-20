@@ -10,5 +10,8 @@ namespace FinalProject.BLL.Models.DTOs.RegisterDTOs
 	{
 		public int Id { get; set; }
 		public string Email { get; set; }
+		public string RefreshToken {  get; set; }
+		public DateTime ExpireTimeRFT {  get; set; }
+		public string UserName {  get; set; }
 	}
 }
