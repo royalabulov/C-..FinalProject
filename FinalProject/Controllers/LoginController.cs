@@ -18,11 +18,11 @@ namespace FinalProject.API.Controllers
 			this.configuration = configuration;
 		}
 
-		[HttpPost]
-		public async Task<LoginResponseDTO> Login(LoginCreateDTO loginCreateDTO)
-		{
-			return await loginService.Login(loginCreateDTO, configuration);
-		}
+		//[HttpPost]
+		//public async Task<LoginResponseDTO> Login(LoginCreateDTO loginCreateDTO)
+		//{
+		//	return await loginService.Login(loginCreateDTO, configuration);
+		//}
 
 		[HttpPost]
 		public async Task<IActionResult> LogOut()

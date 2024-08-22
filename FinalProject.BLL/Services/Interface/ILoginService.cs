@@ -1,4 +1,5 @@
-﻿using FinalProject.BLL.Models.DTOs.LoginDTOs;
+﻿using FinalProject.BLL.Models.DTOs.JwtDTOs;
+using FinalProject.BLL.Models.DTOs.LoginDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -12,8 +13,12 @@ namespace FinalProject.BLL.Services.Interface
 {
 	public interface ILoginService
 	{
-		Task<LoginResponseDTO> Login(LoginCreateDTO login,IConfiguration configuration);
+		Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login,IConfiguration configuration);
 
 		Task<GenericResponseApi<bool>> Logout();
+			
+		Task<GenericResponseApi<GenerateTokenResponse>> LoginWithRefreshTokenAsync(string refreshToken);
+
+		Task<GenericResponseApi<bool>> PasswordReset(PasswordResetDTO passwordReset);
 	}
 }

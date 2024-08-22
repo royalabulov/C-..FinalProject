@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Models.DTOs.LoginDTOs
 {
-	public class LoginResponseDTO
+	public class PasswordResetDTO
 	{
-		public string Token {  get; set; }
-		public DateTime ExpireDate { get; set; }
+		public string Email {  get; set; }
+		public string CurrentPassword { get; set; }
+		public string NewPassword {  get; set; }
+
 	}
 }

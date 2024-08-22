@@ -5,11 +5,7 @@ using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -108,7 +104,7 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var getById = await userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
-				if(getById == null)
+				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
@@ -126,6 +122,71 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				response.Failure($"An error occurred while updating the user: {ex.Message}");
 				Console.WriteLine(ex.Message);
+			}
+			return response;
+		}
+
+
+		public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenData)
+		{
+			if (user != null)
+			{
+				user.RefreshToken = refreshToken;
+				user.ExpireTimeRFT = accessTokenData.AddMinutes(15);
+				await userManager.UpdateAsync(user);
+			}
+		}
+
+		public async Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string userId, string[] roles)
+		{
+			var response = new GenericResponseApi<bool>();
+
+			AppUser user = await userManager.FindByIdAsync(userId);
+			try
+			{
+				if (user != null)
+				{
+
+					var userRoles = await userManager.GetRolesAsync(user);
+					await userManager.RemoveFromRoleAsync(user, userRoles.ToString());
+					await userManager.AddToRoleAsync(user,roles.ToString());
+
+					return response;
+				}
+			}
+			catch (Exception ex)
+			{
+				return response; //Xeta yazarsan
+			}
+			return response;
+		}
+
+		public async Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName)
+		{
+			var response = new GenericResponseApi<string[]>();
+			
+
+			AppUser user = await userManager.FindByIdAsync(userIdOrName);
+
+			if (user == null)
+			{
+				user = await userManager.FindByNameAsync(userIdOrName);
+			}
+
+			try
+			{
+				if (user != null)
+				{
+					var userRoles = await userManager.GetRolesAsync(user);
+					response.StatusCode = 200;
+					response.Data = userRoles.ToArray();
+				}
+			}
+			catch (Exception ex)
+			{
+				response.Data = null;
+				response.StatusCode = 500;
+				await Console.Out.WriteLineAsync(ex.Message);
 			}
 			return response;
 		}

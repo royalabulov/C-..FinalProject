@@ -1,6 +1,7 @@
 ﻿using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.DAL.Repositories;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
+using FinalProject.Domain.Entities;
 namespace FinalProject.BLL.Services.Interface
 {
 	public interface IRegisterService
@@ -9,5 +10,12 @@ namespace FinalProject.BLL.Services.Interface
 		Task<GenericResponseApi<bool>> Create(UserCreateDTO userCreateDTO);
 		Task<GenericResponseApi<bool>> UpdateUser(UserUpdateDTO userUpdateDTO);
 		Task<GenericResponseApi<bool>> RemoveUser(int id);
+
+		Task UpdateRefreshToken(string refreshToken,AppUser user,DateTime accessTokenData);
+
+		Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string userId, string[] roles);
+
+		Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName);
+
 	}
 }

@@ -1,16 +1,15 @@
-﻿using Azure.Core;
-using FinalProject.BLL.Models.DTOs.JwtDTOs;
+﻿using FinalProject.BLL.Models.DTOs.JwtDTOs;
 using FinalProject.BLL.Models.DTOs.LoginDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -18,48 +17,19 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly SignInManager<AppUser> signInManager;
 		private readonly ITokenService tokenService;
+		private readonly IRegisterService registerService;
+		private readonly UserManager<AppUser> userManager;
 
-		public LoginService(SignInManager<AppUser> signInManager,ITokenService tokenService)
-        {
+		public LoginService(SignInManager<AppUser> signInManager, ITokenService tokenService, IRegisterService registerService, UserManager<AppUser> userManager)
+		{
 			this.signInManager = signInManager;
 			this.tokenService = tokenService;
+			this.registerService = registerService;
+			this.userManager = userManager;
 		}
 
-        public async Task<LoginResponseDTO> Login(LoginCreateDTO login, IConfiguration configuration)
-		{
-			LoginResponseDTO response = new LoginResponseDTO();
 
-			try
-			{
-				if (string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password))
-				{
-					//response.Failure("Email or Password is null");	
-					throw new ArgumentNullException(nameof(login));
-				}
 
-				var loginEntity = await signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
-				if (loginEntity.Succeeded)
-				{
-
-					var generatedTokenInformation = await tokenService.GenerateToken(new GenerateTokenRequest { Email = login.Email },
-						configuration);
-
-					response.Token = generatedTokenInformation.Token;
-					response.ExpireDate = generatedTokenInformation.ExpireDate;
-				}
-				else
-				{
-					//response.Failure("Invalid login attempt.");
-					throw new ArgumentNullException(nameof(login));
-				}
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"An error occurred: {ex.Message}");
-				throw;
-			}
-			return response;
-		}
 
 		public async Task<GenericResponseApi<bool>> Logout()
 		{
@@ -69,9 +39,81 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				await signInManager.SignOutAsync();
 				response.Success(true, 204);
-			}catch(Exception ex)
+			}
+			catch (Exception ex)
 			{
 				response.Failure($"An error occurred while logging out: {ex.Message}");
+				Console.WriteLine(ex.Message);
+			}
+			return response;
+		}
+
+
+		public async Task<GenericResponseApi<GenerateTokenResponse>> LoginWithRefreshTokenAsync(string refreshToken)
+		{
+			var response = new GenericResponseApi<GenerateTokenResponse>();
+			AppUser user = await userManager.Users.FirstOrDefaultAsync(rf => rf.RefreshToken == refreshToken);
+
+			try
+			{
+
+				if (user != null && user.ExpireTimeRFT > DateTime.UtcNow)
+				{
+					GenerateTokenResponse token = await tokenService.GenerateToken(user);
+					await registerService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate.AddMinutes(15));
+				}
+			}
+			catch (Exception ex)
+			{
+
+				Console.WriteLine(ex.Message);
+			}
+			return response;
+
+		}
+
+		public async Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login, IConfiguration configuration)
+		{
+			var user = await userManager.FindByNameAsync(login.Email);
+
+			SignInResult result = await signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+
+			if (result.Succeeded)
+			{
+				GenerateTokenResponse response = await tokenService.GenerateToken(user);
+
+				await registerService.UpdateRefreshToken(response.RefreshToken,user, response.ExpireDate.AddMinutes(15));
+
+				return new() { Data = response, StatusCode = 200 };
+			}
+			else
+			{
+				return new() { Data = null, StatusCode = 500 };
+			}
+			
+			
+		} //buna bax
+
+		public async Task<GenericResponseApi<bool>> PasswordReset(PasswordResetDTO passwordReset)
+		{
+			var response = new GenericResponseApi<bool>();
+
+			AppUser user = await userManager.FindByEmailAsync(passwordReset.Email);
+
+			try
+			{
+				if(user != null)
+				{
+					var data = userManager.ChangePasswordAsync(user,passwordReset.CurrentPassword,passwordReset.NewPassword);
+
+					if (data != null)
+					{
+						return response;
+					}
+				}
+			}catch (Exception ex)
+			{
+				response.Failure($"Password not renewed: {ex.Message}");
 				Console.WriteLine(ex.Message);
 			}
 			return response;

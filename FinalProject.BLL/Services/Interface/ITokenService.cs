@@ -1,4 +1,5 @@
 ﻿using FinalProject.BLL.Models.DTOs.JwtDTOs;
+using FinalProject.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace FinalProject.BLL.Services.Interface
 {
 	public interface ITokenService
 	{
-		Task<GenerateTokenResponse> GenerateToken(GenerateTokenRequest request,IConfiguration configuration);
+		Task<GenerateTokenResponse> GenerateToken(AppUser user);
+		string CreateRefreshToken();
 	}
 }
