@@ -33,6 +33,5 @@ namespace FinalProject.Domain.Entities
 
 		//one to one
 		public WishList WishList { get; set; }
-
-	}
+    }
 }

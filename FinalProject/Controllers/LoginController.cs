@@ -10,24 +10,38 @@ namespace FinalProject.API.Controllers
 	public class LoginController : ControllerBase
 	{
 		private readonly ILoginService loginService;
-		private readonly IConfiguration configuration;
+		
 
-		public LoginController(ILoginService loginService,IConfiguration configuration)
+		public LoginController(ILoginService loginService)
         {
 			this.loginService = loginService;
-			this.configuration = configuration;
 		}
 
-		//[HttpPost]
-		//public async Task<LoginResponseDTO> Login(LoginCreateDTO loginCreateDTO)
-		//{
-		//	return await loginService.Login(loginCreateDTO, configuration);
-		//}
+		[HttpPost]
+		public async Task<IActionResult> Login(LoginCreateDTO loginCreateDTO)
+		{
+			var result = await loginService.Login(loginCreateDTO);
+			return StatusCode(result.StatusCode,result);
+		}
 
 		[HttpPost]
 		public async Task<IActionResult> LogOut()
 		{
 			var result = await loginService.Logout();
+			return StatusCode(result.StatusCode, result);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> LoginWithRefreshToken(string refreshToken)
+		{
+			var result = await loginService.LoginWithRefreshTokenAsync(refreshToken);
+			return StatusCode(result.StatusCode, result);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> PasswordReset(PasswordResetDTO passwordResetDTO)
+		{
+			var result = await loginService.PasswordReset(passwordResetDTO);
 			return StatusCode(result.StatusCode, result);
 		}
 

@@ -13,7 +13,7 @@ namespace FinalProject.BLL.Services.Interface
 {
 	public interface ILoginService
 	{
-		Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login,IConfiguration configuration);
+		Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login);
 
 		Task<GenericResponseApi<bool>> Logout();
 			

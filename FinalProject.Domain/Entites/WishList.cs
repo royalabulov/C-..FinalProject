@@ -17,8 +17,7 @@ namespace FinalProject.Domain.Entites
 		public Vacancy Vacancy { get; set;}
 
 		//one to many
-		public int VacantProfile {  get; set; }
-
-		public VacantProfile VacantProfil {  get; set; } //e ni qoya bilmedim
+		public int VacantProfileId {  get; set; }
+		public VacantProfile VacantProfile {  get; set; } 
 	}
 }

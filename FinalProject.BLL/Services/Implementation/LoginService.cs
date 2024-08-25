@@ -72,7 +72,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 		}
 
-		public async Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login, IConfiguration configuration)
+		public async Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login)
 		{
 			var user = await userManager.FindByNameAsync(login.Email);
 
@@ -82,7 +82,7 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				GenerateTokenResponse response = await tokenService.GenerateToken(user);
 
-				await registerService.UpdateRefreshToken(response.RefreshToken,user, response.ExpireDate.AddMinutes(15));
+				await registerService.UpdateRefreshToken(response.RefreshToken, user, response.ExpireDate.AddMinutes(15));
 
 				return new() { Data = response, StatusCode = 200 };
 			}
@@ -90,9 +90,10 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				return new() { Data = null, StatusCode = 500 };
 			}
-			
-			
+
+
 		} //buna bax
+
 
 		public async Task<GenericResponseApi<bool>> PasswordReset(PasswordResetDTO passwordReset)
 		{
@@ -102,16 +103,17 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				if(user != null)
+				if (user != null)
 				{
-					var data = userManager.ChangePasswordAsync(user,passwordReset.CurrentPassword,passwordReset.NewPassword);
+					var data = userManager.ChangePasswordAsync(user, passwordReset.CurrentPassword, passwordReset.NewPassword);
 
 					if (data != null)
 					{
 						return response;
 					}
 				}
-			}catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				response.Failure($"Password not renewed: {ex.Message}");
 				Console.WriteLine(ex.Message);

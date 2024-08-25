@@ -15,5 +15,7 @@ namespace FinalProject.Domain.Repositories
 		Task AddAsync(T entity);
 		void Remove(T entity);
 		void Update(T entity);
+
+		Task<int> Commit();
 	}
 }

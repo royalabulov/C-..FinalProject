@@ -4,6 +4,7 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -27,6 +28,7 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var mapping = mapper.Map<AppUser>(userCreateDTO);
+				
 				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
 
 				if (userEntity.Succeeded)
@@ -37,6 +39,33 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
 				}
+			}		
+			catch (Exception ex)
+			{
+				response.Failure($"An error occurred while creating the user: {ex.Message}");
+				Console.WriteLine(ex.Message);
+			}
+			return response;
+		}
+
+		public async Task<GenericResponseApi<bool>> CreateCompany(UserCreateDTO userCreateDTO)
+		{
+			var response = new GenericResponseApi<bool>();
+
+			try
+			{
+				var mapping = mapper.Map<AppUser>(userCreateDTO);
+
+				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
+
+				if (userEntity.Succeeded)
+				{
+					response.Success(true);
+				}
+
+				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
+				if (user != null)
+					await userManager.AddToRoleAsync(user, "Company");
 			}
 			catch (Exception ex)
 			{

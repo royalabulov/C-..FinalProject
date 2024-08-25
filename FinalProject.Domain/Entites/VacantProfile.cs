@@ -16,7 +16,7 @@ namespace FinalProject.Domain.Entites
 		public string SocialMedia { get; set; }
 		public string Experience { get; set; }
 
-
+		  
 		//one to one
 		public int AppUserId { get; set; }
 		public AppUser AppUser { get; set; }

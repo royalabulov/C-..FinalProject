@@ -30,8 +30,7 @@ namespace FinalProject.BLL.Services.Implementation
 			int expireMinute = int.Parse(configuration["AppSettings:Expire"]);
 
 			var dateTimeNow = DateTime.UtcNow;
-			var notBefore = dateTimeNow;
-			var expire = notBefore.Add(TimeSpan.FromMinutes(expireMinute));
+			var expire = dateTimeNow.Add(TimeSpan.FromMinutes(expireMinute));
 
 			var claims = new List<Claim>
 			{
@@ -46,10 +45,10 @@ namespace FinalProject.BLL.Services.Implementation
 			JwtSecurityToken jwt = new JwtSecurityToken(
 					issuer: configuration["AppSettings:ValidIssuer"],
 					audience: configuration["AppSettings:ValidAudience"],
-					notBefore: expire,
+					notBefore: dateTimeNow,
 					signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256),
 					claims: claims,
-					expires: dateTimeNow.Add(TimeSpan.FromMinutes(expireMinute))
+					expires: expire
 
 			);
 
