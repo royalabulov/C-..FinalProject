@@ -25,6 +25,11 @@ namespace FinalProject.DAL.Repositories
 			await table.AddAsync(entity);
 		}
 
+		public async Task<int> Commit()
+		{
+			return await context.SaveChangesAsync();
+		}
+
 		public async Task<IEnumerable<T>> GetAll()
 		{
 			return await table.ToListAsync();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface IVacantProfile:IGenericRepository<VacantProfile>
+	public interface ISubscriptionRepository:IGenericRepository<Subscription>
 	{
 	}
 }

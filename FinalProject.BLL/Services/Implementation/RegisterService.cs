@@ -177,8 +177,8 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 
 					var userRoles = await userManager.GetRolesAsync(user);
-					await userManager.RemoveFromRoleAsync(user, userRoles.ToString());
-					await userManager.AddToRoleAsync(user,roles.ToString());
+					await userManager.RemoveFromRolesAsync(user, userRoles);
+					await userManager.AddToRolesAsync(user,roles);
 
 					return response;
 				}

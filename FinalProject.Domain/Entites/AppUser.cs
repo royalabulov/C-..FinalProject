@@ -6,10 +6,12 @@ namespace FinalProject.Domain.Entities
 	public class AppUser : IdentityUser<int>
 	{
 		//one to one
+		
 		public Company Company { get; set; }
 		//problem var one to one da
 
 		//one to one
+		
 		public VacantProfile VacantProfile { get; set; } 
 		
 

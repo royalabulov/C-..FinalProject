@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using FinalProject.BLL.Models.DTOs.AppRoleDTOs;
+using FinalProject.BLL.Models.DTOs.CategoryDTOs;
+using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Models.DTOs.RegisterDTOs;
+using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,10 +22,24 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<AppUser, UserUpdateDTO>().ReverseMap();
 			CreateMap<UserCreateDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
 
-
 			//ROLE
 			CreateMap<AppRole, AppRoleGetDTO>().ReverseMap();
 			CreateMap<AppRole, AppRoleUpdateDTO>().ReverseMap();
+
+			//Company
+			CreateMap<Company,CompanyGetDTO>().ReverseMap();
+			CreateMap<Company, CompanyUpdateDTO>().ReverseMap();
+			CreateMap<Company,CompanyCreateDTO>().ReverseMap();
+
+			//Vacancy
+			CreateMap<Vacancy,GetAllVacancyDTO>().ReverseMap();
+			CreateMap<Vacancy, CreateVacancyDTO>().ReverseMap();
+			CreateMap<Vacancy, UpdateVacancyDTO>().ReverseMap();
+
+			//Category
+			CreateMap<Category,GetAllCategoryDTO>().ReverseMap();
+			CreateMap<Category,CreateCategoryDTO>().ReverseMap();
+			CreateMap<Category,UpdateCategoryDTO>().ReverseMap();
 		}
 	}
 }

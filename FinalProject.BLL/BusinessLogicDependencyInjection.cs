@@ -21,6 +21,7 @@ namespace FinalProject.BLL
 			services.AddScoped<IRegisterService, RegisterService>();
 			services.AddScoped<ILoginService, LoginService>();
 			services.AddScoped<ITokenService, TokenService>();
+			services.AddScoped<ICompanyService, CompanyService>();
 			
 		}
 	}

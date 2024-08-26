@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Entites
 {
-	public class VacantProfile : BaseEntity
+	public class VacantProfile : BaseEntity//sil
 	{
 		public string Skill { get; set; }
 		public string Description { get; set; }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories
 {
-	public class VacantProfileRepository : GenericRepositoryApi<VacantProfile>,IVacantProfile
+	public class VacantProfileRepository : GenericRepositoryApi<Domain.Entites.VacantProfile>,IVacantProfileRepository
 	{
 		private readonly AppDBContext context;
 

@@ -1,5 +1,6 @@
 ﻿using FinalProject.DAL.Context;
 using FinalProject.DAL.Repositories;
+using FinalProject.Domain.Entites;
 using FinalProject.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,11 @@ namespace FinalProject.DAL
 			services.AddScoped<IIndustryRepository, IndustryRepository>();
 			services.AddScoped<ICompanyRepository, CompanyRepository>();
 			services.AddScoped<ICategoryRepository, CategoryRepository>();
+			services.AddScoped<IAdvertisingRepository, AdvertisingRepository>();
+			services.AddScoped<ISubscriptionRepository,SubscriptionRepository>();
+			services.AddScoped<IVacantProfileRepository, VacantProfileRepository>();
+			services.AddScoped<IWishListRepository, WishListRepository>();
+
 
 		}
 

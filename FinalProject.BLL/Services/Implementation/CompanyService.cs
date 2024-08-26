@@ -106,7 +106,8 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Id not found", 404);
 					return response;
 				}
-				companyRepository.Update(getById);
+				var mapping = mapper.Map(companyUpdate, getById);
+				companyRepository.Update(mapping);
 				await companyRepository.Commit();
 			}
 			catch (Exception ex)

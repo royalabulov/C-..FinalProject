@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FinalProject.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class added2000 : Migration
+    public partial class added200 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Advertising",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VacancyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Advertising", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -32,9 +47,8 @@ namespace FinalProject.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CompanyId = table.Column<int>(type: "int", nullable: true),
-                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExpireTimeRFT = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpireTimeRFT = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -278,11 +292,19 @@ namespace FinalProject.DAL.Migrations
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    AdvertisingId1 = table.Column<int>(type: "int", nullable: false),
+                    AdvertisingId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vacancy", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vacancy_Advertising_AdvertisingId1",
+                        column: x => x.AdvertisingId1,
+                        principalTable: "Advertising",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Vacancy_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -298,33 +320,11 @@ namespace FinalProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Advertising",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<int>(type: "int", nullable: false),
-                    ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VacancyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advertising", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Advertising_Vacancy_VacancyId",
-                        column: x => x.VacancyId,
-                        principalTable: "Vacancy",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WishList",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VacancyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VacancyId = table.Column<int>(type: "int", nullable: false),
                     VacantProfileId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -343,12 +343,6 @@ namespace FinalProject.DAL.Migrations
                         principalTable: "VacantProfiles",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Advertising_VacancyId",
-                table: "Advertising",
-                column: "VacancyId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -407,6 +401,11 @@ namespace FinalProject.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Vacancy_AdvertisingId1",
+                table: "Vacancy",
+                column: "AdvertisingId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vacancy_CategoryId",
                 table: "Vacancy",
                 column: "CategoryId");
@@ -438,9 +437,6 @@ namespace FinalProject.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Advertising");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -469,6 +465,9 @@ namespace FinalProject.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "VacantProfiles");
+
+            migrationBuilder.DropTable(
+                name: "Advertising");
 
             migrationBuilder.DropTable(
                 name: "Categories");

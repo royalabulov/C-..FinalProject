@@ -14,7 +14,6 @@ namespace FinalProject.Domain.Entites
 
 
 	    //one to one
-		public int VacancyId {  get; set; }
-		public Vacancy Vacancy { get; set;}
+		public int VacancyId { get; set;}
 	}
 }

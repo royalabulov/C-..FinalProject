@@ -30,6 +30,7 @@ namespace FinalProject.Domain.Entities
 
 		//one to one 
 		public Advertising Advertising { get; set; }
+		public int AdvertisingId {  get; set; }
 
 		//one to one
 		public WishList WishList { get; set; }

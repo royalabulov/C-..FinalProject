@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240825131031_added200011")]
-    partial class added200011
+    [Migration("20240826155208_added200")]
+    partial class added200
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,9 +43,6 @@ namespace FinalProject.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("VacancyId")
-                        .IsUnique();
 
                     b.ToTable("Advertising");
                 });
@@ -133,10 +130,6 @@ namespace FinalProject.DAL.Migrations
 
                     b.Property<int>("VacancyId")
                         .HasColumnType("int");
-
-                    b.Property<string>("VacancyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VacantProfileId")
                         .HasColumnType("int");
@@ -340,6 +333,12 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AdvertisingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AdvertisingId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -368,6 +367,8 @@ namespace FinalProject.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdvertisingId1");
 
                     b.HasIndex("CategoryId");
 
@@ -479,17 +480,6 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.Advertising", b =>
-                {
-                    b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
-                        .WithOne("Advertising")
-                        .HasForeignKey("FinalProject.Domain.Entites.Advertising", "VacancyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vacancy");
-                });
-
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Company", "Company")
@@ -551,6 +541,12 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
                 {
+                    b.HasOne("FinalProject.Domain.Entites.Advertising", "Advertising")
+                        .WithMany()
+                        .HasForeignKey("AdvertisingId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("FinalProject.Domain.Entities.Category", "Category")
                         .WithMany("Vacancy")
                         .HasForeignKey("CategoryId")
@@ -562,6 +558,8 @@ namespace FinalProject.DAL.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Advertising");
 
                     b.Navigation("Category");
 
@@ -653,9 +651,6 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
                 {
-                    b.Navigation("Advertising")
-                        .IsRequired();
-
                     b.Navigation("WishList")
                         .IsRequired();
                 });

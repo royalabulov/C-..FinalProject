@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories
 {
-	public class SubscriptionRepository : GenericRepositoryApi<Subscription>, ISubscriptionResponse
+	public class SubscriptionRepository : GenericRepositoryApi<Subscription>, ISubscriptionRepository
 	{
 		private readonly AppDBContext context;
 
