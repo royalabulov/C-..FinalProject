@@ -28,7 +28,7 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var mapping = mapper.Map<AppUser>(userCreateDTO);
-				
+
 				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
 
 				if (userEntity.Succeeded)
@@ -39,7 +39,12 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
 				}
-			}		
+				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
+				//if (user != null)
+				//	await userManager.AddToRoleAsync(user, "Vacant");
+
+
+			}
 			catch (Exception ex)
 			{
 				response.Failure($"An error occurred while creating the user: {ex.Message}");
@@ -178,7 +183,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 					var userRoles = await userManager.GetRolesAsync(user);
 					await userManager.RemoveFromRolesAsync(user, userRoles);
-					await userManager.AddToRolesAsync(user,roles);
+					await userManager.AddToRolesAsync(user, roles);
 
 					return response;
 				}
@@ -193,7 +198,7 @@ namespace FinalProject.BLL.Services.Implementation
 		public async Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName)
 		{
 			var response = new GenericResponseApi<string[]>();
-			
+
 
 			AppUser user = await userManager.FindByIdAsync(userIdOrName);
 

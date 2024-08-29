@@ -50,7 +50,6 @@ namespace FinalProject.DAL.Context
 
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Company> Companys { get; set; }
-		public DbSet<Industry> Industry { get; set; }
 		public DbSet<Vacancy> Vacancy { get; set; }
 		public DbSet<Advertising> Advertising { get; set; }
 		public DbSet<Subscription> Subscriptions { get; set; }

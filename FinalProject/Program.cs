@@ -1,11 +1,15 @@
 using FinalProject.BLL;
+using FinalProject.BLL.Models.Filters;
+using FinalProject.BLL.Models.Validations;
 using FinalProject.DAL;
 using FinalProject.DAL.Context;
 using FinalProject.Domain.Entities;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.ComponentModel;
 using System.Data;
 using System.Text;
 
@@ -26,15 +30,16 @@ services.DataAccessDependencyInjectionMethod(Configuration);
 services.AddControllers();
 
 
+
+
+services.AddControllers(options => options.Filters.Add(typeof(ValidateModelFilters)));
+
 services.AddIdentity<AppUser, AppRole>(op =>
 {
-	op.Password.RequireNonAlphanumeric = false;
-	op.Password.RequiredLength = 8;
-	op.Password.RequireLowercase = true;
-	op.Password.RequiredUniqueChars = 0;
 
-	op.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<AppDBContext>().AddDefaultTokenProviders();
+
+
 
 
 services.AddSwaggerGen(c =>
@@ -54,12 +59,12 @@ services.AddSwaggerGen(c =>
 				{
 				   Reference = new OpenApiReference
 				   {
-				      Type = ReferenceType.SecurityScheme,
+					  Type = ReferenceType.SecurityScheme,
 					  Id = "Bearer"
 				   }
 			},
 			new string[] { }
-	    }
+		}
 	});
 });
 

@@ -18,13 +18,11 @@ namespace FinalProject.Domain.Entities
 
 		public ICollection<Vacancy> Vacancies { get; set; }
 
-		public int IndustryId { get; set; }
-		public Industry Industry { get; set; }
 
 
 		//one to one
-	
 		public Subscription Subscription { get; set; }
+
 
 	    public int AppUserId {  get; set; }
 		public AppUser AppUser { get; set; }

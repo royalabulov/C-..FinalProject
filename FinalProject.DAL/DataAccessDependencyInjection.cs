@@ -25,7 +25,6 @@ namespace FinalProject.DAL
 			});
 
 			services.AddScoped<IVacanyRepository, VacanyRepository>();
-			services.AddScoped<IIndustryRepository, IndustryRepository>();
 			services.AddScoped<ICompanyRepository, CompanyRepository>();
 			services.AddScoped<ICategoryRepository, CategoryRepository>();
 			services.AddScoped<IAdvertisingRepository, AdvertisingRepository>();
