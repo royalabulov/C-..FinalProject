@@ -25,6 +25,9 @@ namespace FinalProject.BLL
 			services.AddScoped<ILoginService, LoginService>();
 			services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<ICompanyService, CompanyService>();
+			services.AddScoped<ICategoryService, CategoryService>();
+			services.AddScoped<IVacancyService, VacancyService>();
+			services.AddScoped<IAdvertisingService, AdvertisingService>();
 
 
 			services.AddFluentValidationAutoValidation()

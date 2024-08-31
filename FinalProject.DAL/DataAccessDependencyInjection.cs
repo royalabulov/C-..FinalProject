@@ -1,7 +1,9 @@
 ﻿using FinalProject.DAL.Context;
-using FinalProject.DAL.Repositories;
+using FinalProject.DAL.Repositories.EntityRepository;
+using FinalProject.DAL.UnitOfWorkImplementation;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Repositories;
+using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL
 {
-	public static class DataAccessDependencyInjection
+    public static class DataAccessDependencyInjection
 	{
 		public static void DataAccessDependencyInjectionMethod(this IServiceCollection services, IConfiguration configuration)
 		{
@@ -31,7 +33,7 @@ namespace FinalProject.DAL
 			services.AddScoped<ISubscriptionRepository,SubscriptionRepository>();
 			services.AddScoped<IVacantProfileRepository, VacantProfileRepository>();
 			services.AddScoped<IWishListRepository, WishListRepository>();
-
+			services.AddScoped<IUnitOfWork,UnitOfWork>();   
 
 		}
 

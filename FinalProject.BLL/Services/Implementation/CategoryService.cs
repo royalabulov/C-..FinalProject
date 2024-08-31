@@ -4,18 +4,19 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
+using FinalProject.Domain.UnitOfWorkInterface;
 
 namespace FinalProject.BLL.Services.Implementation
 {
 	public class CategoryService : ICategoryService
 	{
-		private readonly ICategoryRepository categoryRepository;
 		private readonly IMapper mapper;
+		private readonly IUnitOfWork unitOfWork;
 
-		public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
+		public CategoryService(IMapper mapper,IUnitOfWork unitOfWork)
 		{
-			this.categoryRepository = categoryRepository;
 			this.mapper = mapper;
+			this.unitOfWork = unitOfWork;
 		}
 
 		public async Task<GenericResponseApi<bool>> CreateCategory(CreateCategoryDTO category)
@@ -29,8 +30,8 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Category data null", 404);
 				}
 				var mapping = mapper.Map<Category>(category);
-				await categoryRepository.AddAsync(mapping);
-				await categoryRepository.Commit();
+				await unitOfWork.GetRepository<Category>().AddAsync(mapping);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{
@@ -46,15 +47,15 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await categoryRepository.GetById(id);
+				var getById = await unitOfWork.GetRepository<Category>().GetById(id);
 				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
 
-				categoryRepository.Remove(getById);
-				await categoryRepository.Commit();
+				unitOfWork.GetRepository<Category>().Remove(getById);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{
@@ -70,7 +71,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var categoryEntity = await categoryRepository.GetAll();
+				var categoryEntity = await unitOfWork.GetRepository<Category>().GetAll();
 				if (categoryEntity == null)
 				{
 					response.Failure("Category not found", 404);
@@ -93,15 +94,15 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await categoryRepository.GetById(category.Id);
+				var getById = await unitOfWork.GetRepository<Category>().GetById(category.Id);
 				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
 				var mapping = mapper.Map(category, getById);
-				categoryRepository.Update(mapping);
-				await categoryRepository.Commit();
+				unitOfWork.GetRepository<Category>().Update(mapping);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{

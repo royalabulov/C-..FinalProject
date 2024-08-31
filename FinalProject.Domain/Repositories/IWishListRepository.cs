@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface IWishListRepository:IGenericRepository<WishList>
-	{
-	}
+    public interface IWishListRepository : IGenericRepository<WishList>
+    {
+    }
 }

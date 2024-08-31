@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface ICompanyRepository:IGenericRepository<Company>
-	{
+    public interface ICompanyRepository : IGenericRepository<Company>
+    {
 
-	}
+    }
 }

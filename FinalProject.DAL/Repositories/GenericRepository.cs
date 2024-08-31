@@ -15,24 +15,26 @@ namespace FinalProject.DAL.Repositories
 		private readonly AppDBContext context;
 		private readonly DbSet<T> table;
 		public GenericRepositoryApi(AppDBContext context)
-        {
+		{
 			this.context = context;
 			table = context.Set<T>();
 		}
 
-        public async Task AddAsync(T entity)
+		public async Task AddAsync(T entity)
 		{
 			await table.AddAsync(entity);
 		}
 
-		public async Task<int> Commit()
-		{
-			return await context.SaveChangesAsync();
-		}
 
 		public async Task<IEnumerable<T>> GetAll()
 		{
 			return await table.ToListAsync();
+		}
+
+		public IQueryable<T> GetAsQueryable()
+		{
+			var query = table.AsQueryable();
+			return query;
 		}
 
 		public async Task<T> GetById(int id)

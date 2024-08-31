@@ -15,4 +15,4 @@ namespace FinalProject.BLL.Models.DTOs.CompanyDTOs
 		public string ContactNumber {  get; set; }
 	
 	}
-}
+} 

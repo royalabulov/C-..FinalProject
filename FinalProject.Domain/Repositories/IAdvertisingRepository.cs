@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface IAdvertisingRepository : IGenericRepository<Advertising>
-	{
-	}
+    public interface IAdvertisingRepository : IGenericRepository<Advertising>
+    {
+    }
 }

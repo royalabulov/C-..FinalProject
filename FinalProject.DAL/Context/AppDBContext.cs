@@ -45,6 +45,15 @@ namespace FinalProject.DAL.Context
 					.OnDelete(DeleteBehavior.ClientSetNull);
 			});
 
+			modelBuilder.Entity<Advertising>(entity =>
+			{
+				entity.ToTable("Advertising");
+
+				entity.HasIndex(e => e.VacancyId, "IX_Advertising_VacancyId").IsUnique();
+
+				entity.HasOne(d => d.Vacancy).WithOne(p => p.Advertising).HasForeignKey<Advertising>(d => d.VacancyId);
+			});
+
 		}
 
 

@@ -12,10 +12,11 @@ namespace FinalProject.Domain.Repositories
 	{
 		Task<T> GetById(int id);
 		Task<IEnumerable<T>> GetAll();
+		IQueryable<T> GetAsQueryable();
 		Task AddAsync(T entity);
 		void Remove(T entity);
 		void Update(T entity);
 
-		Task<int> Commit();
+
 	}
 }

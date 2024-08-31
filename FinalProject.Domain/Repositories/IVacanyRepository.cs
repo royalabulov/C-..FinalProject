@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface IVacanyRepository:IGenericRepository<Vacancy>
-	{
+    public interface IVacanyRepository : IGenericRepository<Vacancy>
+    {
 
-	}
+    }
 }

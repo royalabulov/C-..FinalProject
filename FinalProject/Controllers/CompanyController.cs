@@ -17,7 +17,7 @@ namespace FinalProject.API.Controllers
 			this.companyService = companyService;
 		}
 
-
+		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllCompany()
 		{

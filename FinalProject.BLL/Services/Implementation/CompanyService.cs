@@ -2,8 +2,10 @@
 using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
+using FinalProject.DAL.UnitOfWorkImplementation;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
+using FinalProject.Domain.UnitOfWorkInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +16,13 @@ namespace FinalProject.BLL.Services.Implementation
 {
 	public class CompanyService : ICompanyService
 	{
-		private readonly ICompanyRepository companyRepository;
 		private readonly IMapper mapper;
+		private readonly IUnitOfWork unitOfWork;
 
-		public CompanyService(ICompanyRepository companyRepository, IMapper mapper)
+		public CompanyService(IMapper mapper,IUnitOfWork unitOfWork)
 		{
-			this.companyRepository = companyRepository;
 			this.mapper = mapper;
+			this.unitOfWork = unitOfWork;
 		}
 
 		public async Task<GenericResponseApi<List<CompanyGetDTO>>> GetAllCompany()
@@ -29,7 +31,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var companyEntity = await companyRepository.GetAll();
+				var companyEntity = await unitOfWork.GetRepository<Company>().GetAll();
 				if (companyEntity == null)
 				{
 					response.Failure("Company not found", 404);
@@ -57,8 +59,8 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Company data null", 404);
 				}
 				var mapping = mapper.Map<Company>(companyCreate);
-				await companyRepository.AddAsync(mapping);
-				await companyRepository.Commit();
+				await unitOfWork.GetRepository<Company>().AddAsync(mapping);
+				await unitOfWork.Commit();
 
 			}
 			catch (Exception ex)
@@ -75,14 +77,14 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await companyRepository.GetById(id);
+				var getById = await unitOfWork.GetRepository<Company>().GetById(id);
 				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
-				companyRepository.Remove(getById);
-				await companyRepository.Commit();
+				unitOfWork.GetRepository<Company>().Remove(getById);
+				await unitOfWork.Commit();
 
 			}
 			catch (Exception ex)
@@ -100,15 +102,15 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await companyRepository.GetById(companyUpdate.Id);
+				var getById = await unitOfWork.GetRepository<Company>().GetById(companyUpdate.Id);
 				if(getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
 				var mapping = mapper.Map(companyUpdate, getById);
-				companyRepository.Update(mapping);
-				await companyRepository.Commit();
+				unitOfWork.GetRepository<Company>().Update(mapping);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{

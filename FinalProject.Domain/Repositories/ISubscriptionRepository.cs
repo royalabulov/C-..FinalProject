@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Repositories
 {
-	public interface ISubscriptionRepository:IGenericRepository<Subscription>
-	{
-	}
+    public interface ISubscriptionRepository : IGenericRepository<Subscription>
+    {
+    }
 }

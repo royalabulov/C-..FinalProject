@@ -5,6 +5,7 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
+using FinalProject.Domain.UnitOfWorkInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +16,13 @@ namespace FinalProject.BLL.Services.Implementation
 {
 	public class VacancyService : IVacancyService
 	{
-		private readonly IVacanyRepository vacanyRepository;
 		private readonly IMapper mapper;
+		private readonly IUnitOfWork unitOfWork;
 
-		public VacancyService(IVacanyRepository vacanyRepository, IMapper mapper)
+		public VacancyService( IMapper mapper,IUnitOfWork unitOfWork)
 		{
-			this.vacanyRepository = vacanyRepository;
 			this.mapper = mapper;
+			this.unitOfWork = unitOfWork;
 		}
 		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacancy()
 		{
@@ -29,7 +30,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var vacancyEntity = await vacanyRepository.GetAll();
+				var vacancyEntity = await unitOfWork.GetRepository<Vacancy>().GetAll();
 
 				if (vacancyEntity == null)
 				{
@@ -62,8 +63,8 @@ namespace FinalProject.BLL.Services.Implementation
 				}
 				var mapping = mapper.Map<Vacancy>(createVacancy);
 
-				await vacanyRepository.AddAsync(mapping);
-				await vacanyRepository.Commit();
+				await unitOfWork.GetRepository<Vacancy>().AddAsync(mapping);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{
@@ -79,15 +80,15 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await vacanyRepository.GetById(Id);
+				var getById = await unitOfWork.GetRepository<Vacancy>().GetById(Id);
 
 				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
-				vacanyRepository.Remove(getById);
-				await vacanyRepository.Commit();
+				unitOfWork.GetRepository<Vacancy>().Remove(getById);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{
@@ -104,15 +105,15 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
-				var getById = await vacanyRepository.GetById(updateVacancy.Id);
+				var getById = await unitOfWork.GetRepository<Vacancy>().GetById(updateVacancy.Id);
 				if(getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
 				var mapping = mapper.Map(updateVacancy, getById);
-				vacanyRepository.Update(mapping);
-				await vacanyRepository.Commit();
+				unitOfWork.GetRepository<Vacancy>().Update(mapping);
+				await unitOfWork.Commit();
 			}
 			catch (Exception ex)
 			{
