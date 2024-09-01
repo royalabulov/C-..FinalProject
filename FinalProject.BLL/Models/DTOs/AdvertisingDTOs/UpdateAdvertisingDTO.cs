@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Models.DTOs.AdvertisingDTOs
 {
-	public class GetAllAdvertisingDTO
+	public class UpdateAdvertisingDTO
 	{
 		public int Id { get; set; }
 		public string? VacancyName { get; set; }

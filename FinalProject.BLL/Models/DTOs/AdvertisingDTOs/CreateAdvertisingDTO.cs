@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Models.DTOs.AdvertisingDTOs
 {
-	public class GetAllAdvertisingDTO
+	public class CreateAdvertisingDTO
 	{
-		public int Id { get; set; }
-		public string? VacancyName { get; set; }
 		public int Price { get; set; }
 		public DateTime ExpireTime { get; set; }
 	}

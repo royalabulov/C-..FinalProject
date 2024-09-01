@@ -11,5 +11,8 @@ namespace FinalProject.BLL.Services.Interface
 	public interface IAdvertisingService
 	{
 		Task<GenericResponseApi<List<GetAllAdvertisingDTO>>> GetAllAdvertising();
+		Task<GenericResponseApi<bool>> CreateAdvertising(CreateAdvertisingDTO createAdvertising);
+		Task<GenericResponseApi<bool>> UpdateAdvertising(UpdateAdvertisingDTO updateAdvertising);
+		Task<GenericResponseApi<bool>> RemoveAdvertising(int id);
 	}
 }
