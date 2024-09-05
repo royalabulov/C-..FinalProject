@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL.Repositories.EntityRepository
 {
-    public class WishListRepository : GenericRepositoryApi<WishList>, IWishListRepository
+    public class WishListVacancyRepository : GenericRepositoryApi<WishListVacancy>, IWishListVacancyRepository
     {
         private readonly AppDBContext context;
 
-        public WishListRepository(AppDBContext context) : base(context)
+        public WishListVacancyRepository(AppDBContext context) : base(context)
         {
             this.context = context;
         }

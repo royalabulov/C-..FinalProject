@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalProject.BLL.Models.DTOs.AppRoleDTOs
+namespace FinalProject.BLL.Models.DTOs.WishListDTOs
 {
-	public class AppRoleGetDTO
+	public class GetAllVacantWishListDTO//dto ayir
 	{
 		public int Id { get; set; }
-		public string Name {  get; set; }
+		public string VacantProfile {  get; set; }
 	}
 }

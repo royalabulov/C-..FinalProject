@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DAL
 {
-    public static class DataAccessDependencyInjection
+	public static class DataAccessDependencyInjection
 	{
 		public static void DataAccessDependencyInjectionMethod(this IServiceCollection services, IConfiguration configuration)
 		{
@@ -30,10 +30,11 @@ namespace FinalProject.DAL
 			services.AddScoped<ICompanyRepository, CompanyRepository>();
 			services.AddScoped<ICategoryRepository, CategoryRepository>();
 			services.AddScoped<IAdvertisingRepository, AdvertisingRepository>();
-			services.AddScoped<ISubscriptionRepository,SubscriptionRepository>();
+			services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 			services.AddScoped<IVacantProfileRepository, VacantProfileRepository>();
-			services.AddScoped<IWishListRepository, WishListRepository>();
-			services.AddScoped<IUnitOfWork,UnitOfWork>();   
+			services.AddScoped<IWishListVacancyRepository, WishListVacancyRepository>();
+			services.AddScoped<IWishListVacantRepository, WishListVacantRepository>();
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 		}
 

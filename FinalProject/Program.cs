@@ -1,4 +1,5 @@
 using FinalProject.BLL;
+using FinalProject.BLL.Models.Exception;
 using FinalProject.BLL.Models.Filters;
 using FinalProject.BLL.Models.Validations;
 using FinalProject.DAL;
@@ -33,6 +34,7 @@ services.AddControllers();
 
 
 services.AddControllers(options => options.Filters.Add(typeof(ValidateModelFilters)));
+services.AddControllers(opt => opt.Filters.Add<GlobalExceptionHandler>());
 
 services.AddIdentity<AppUser, AppRole>(op =>
 {
@@ -117,6 +119,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+
 
 app.UseHttpsRedirection();
 

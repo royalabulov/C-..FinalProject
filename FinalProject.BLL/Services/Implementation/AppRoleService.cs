@@ -3,13 +3,10 @@ using FinalProject.BLL.Models.DTOs.AppRoleDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
+using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -18,10 +15,12 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly RoleManager<AppRole> roleManager;
 		private readonly IMapper mapper;
 
+
 		public AppRoleService(RoleManager<AppRole> roleManager, IMapper mapper)
 		{
 			this.roleManager = roleManager;
 			this.mapper = mapper;
+		
 		}
 
 		public async Task<GenericResponseApi<List<AppRoleGetDTO>>> GetAllRoles()
@@ -57,7 +56,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 				var roleEntity = await roleManager.CreateAsync(new AppRole { Name = roleName });
 
-				if (roleEntity == null)
+				if (roleEntity.Succeeded)
 				{
 					response.Success(true);
 				}
@@ -65,7 +64,7 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					response.Failure(roleEntity.Errors.Select(m => m.Description).ToList(), 400);
 				}
-
+                 
 			}
 			catch (Exception ex)
 			{

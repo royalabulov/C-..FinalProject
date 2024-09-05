@@ -128,7 +128,7 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("VacantProfiles");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishList", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacancy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,17 +139,30 @@ namespace FinalProject.DAL.Migrations
                     b.Property<int>("VacancyId")
                         .HasColumnType("int");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("VacancyId")
+                        .IsUnique();
+
+                    b.ToTable("WishListVacancies");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("VacantProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "VacancyId" }, "IX_WishList_VacancyId")
-                        .IsUnique();
+                    b.HasIndex("VacantProfileId");
 
-                    b.HasIndex(new[] { "VacantProfileId" }, "IX_WishList_VacantProfilId");
-
-                    b.ToTable("WishList", (string)null);
+                    b.ToTable("WishListVacants");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppRole", b =>
@@ -494,20 +507,24 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishList", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacancy", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
                         .WithOne("WishList")
-                        .HasForeignKey("FinalProject.Domain.Entites.WishList", "VacancyId")
+                        .HasForeignKey("FinalProject.Domain.Entites.WishListVacancy", "VacancyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
-                        .WithMany("WishList")
-                        .HasForeignKey("VacantProfileId")
-                        .IsRequired();
-
                     b.Navigation("Vacancy");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
+                        .WithMany("WishListVacant")
+                        .HasForeignKey("VacantProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VacantProfile");
                 });
@@ -595,7 +612,7 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
                 {
-                    b.Navigation("WishList");
+                    b.Navigation("WishListVacant");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppUser", b =>

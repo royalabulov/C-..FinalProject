@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240826155208_added200")]
-    partial class added200
+    [Migration("20240905100052_added01")]
+    partial class added01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,10 @@ namespace FinalProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Advertising");
+                    b.HasIndex(new[] { "VacancyId" }, "IX_Advertising_VacancyId")
+                        .IsUnique();
+
+                    b.ToTable("Advertising", (string)null);
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
@@ -85,18 +88,26 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("About")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Experience")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -120,7 +131,7 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("VacantProfiles");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishList", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacancy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,17 +142,31 @@ namespace FinalProject.DAL.Migrations
                     b.Property<int>("VacancyId")
                         .HasColumnType("int");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("VacancyId")
+                        .IsUnique();
+
+                    b.ToTable("WishListVacancies");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("VacantProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "VacancyId" }, "IX_WishList_VacancyId")
+                    b.HasIndex(new[] { "VacantProfileId" }, "IX_WishListVacant_VacantProfileId")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "VacantProfileId" }, "IX_WishList_VacantProfilId");
-
-                    b.ToTable("WishList", (string)null);
+                    b.ToTable("WishListVacant", (string)null);
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppRole", b =>
@@ -288,9 +313,6 @@ namespace FinalProject.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IndustryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -303,26 +325,7 @@ namespace FinalProject.DAL.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.HasIndex("IndustryId");
-
                     b.ToTable("Companys");
-                });
-
-            modelBuilder.Entity("FinalProject.Domain.Entities.Industry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("HeaderName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Industry");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
@@ -334,9 +337,6 @@ namespace FinalProject.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AdvertisingId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AdvertisingId1")
                         .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
@@ -367,8 +367,6 @@ namespace FinalProject.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AdvertisingId1");
 
                     b.HasIndex("CategoryId");
 
@@ -480,6 +478,17 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FinalProject.Domain.Entites.Advertising", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
+                        .WithOne("Advertising")
+                        .HasForeignKey("FinalProject.Domain.Entites.Advertising", "VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vacancy");
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Company", "Company")
@@ -502,20 +511,24 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishList", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacancy", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
                         .WithOne("WishList")
-                        .HasForeignKey("FinalProject.Domain.Entites.WishList", "VacancyId")
+                        .HasForeignKey("FinalProject.Domain.Entites.WishListVacancy", "VacancyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
-                        .WithMany("WishList")
-                        .HasForeignKey("VacantProfileId")
-                        .IsRequired();
-
                     b.Navigation("Vacancy");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
+                        .WithMany("WishListVacant")
+                        .HasForeignKey("VacantProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VacantProfile");
                 });
@@ -528,25 +541,11 @@ namespace FinalProject.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProject.Domain.Entities.Industry", "Industry")
-                        .WithMany("Companies")
-                        .HasForeignKey("IndustryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("AppUser");
-
-                    b.Navigation("Industry");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
                 {
-                    b.HasOne("FinalProject.Domain.Entites.Advertising", "Advertising")
-                        .WithMany()
-                        .HasForeignKey("AdvertisingId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FinalProject.Domain.Entities.Category", "Category")
                         .WithMany("Vacancy")
                         .HasForeignKey("CategoryId")
@@ -558,8 +557,6 @@ namespace FinalProject.DAL.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Advertising");
 
                     b.Navigation("Category");
 
@@ -619,7 +616,7 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
                 {
-                    b.Navigation("WishList");
+                    b.Navigation("WishListVacant");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppUser", b =>
@@ -644,13 +641,11 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("Vacancies");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entities.Industry", b =>
-                {
-                    b.Navigation("Companies");
-                });
-
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
                 {
+                    b.Navigation("Advertising")
+                        .IsRequired();
+
                     b.Navigation("WishList")
                         .IsRequired();
                 });

@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 
 namespace FinalProject.Domain.Entites
 {
-	public class WishList : BaseEntity
+	public class WishListVacancy : BaseEntity
 	{
 		//one to one
 		public int VacancyId {  get; set; }
 		public Vacancy Vacancy { get; set;}
 
-		//one to many
-		public int VacantProfileId {  get; set; }
-		public VacantProfile VacantProfile {  get; set; } 
 	}
 }

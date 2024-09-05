@@ -19,15 +19,16 @@ namespace FinalProject.BLL.Models.Filters
 
 		public void OnActionExecuting(ActionExecutingContext context)
 		{
-			//if (!context.ModelState.IsValid)
-			//{
-			//	var messages = context.ModelState
-			//		.SelectMany(message=>message.Value.Errors)
-			//		.Select(error=>error.ErrorMessage)
-			//		.ToList();	
-			
-			//	context.Result = new BadRequestObjectResult(messages);
-			//}
+
+			if (!context.ModelState.IsValid)
+			{
+				//var messages = context.ModelState
+				//	.SelectMany(message => message.Value.Errors)
+				//	.Select(error => error.ErrorMessage)
+				//	.ToList();
+
+				//context.Result = new GenericResponseApi(messages);
+			}
 		}
 	}
 }

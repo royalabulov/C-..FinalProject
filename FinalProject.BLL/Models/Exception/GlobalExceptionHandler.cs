@@ -22,13 +22,13 @@ namespace FinalProject.BLL.Models.Exception
 				NullReferenceException => StatusCodes.Status404NotFound,
 
 				UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-				
+
 				_ => StatusCodes.Status500InternalServerError
 			};
 
 			context.Result = new ObjectResult(new
 			{
-				error = context.Exception.Message,
+				error = context.Exception.Message,	
 				stackTrace = context.Exception.StackTrace
 			})
 			{

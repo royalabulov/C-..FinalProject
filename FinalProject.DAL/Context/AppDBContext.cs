@@ -2,6 +2,7 @@
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace FinalProject.DAL.Context
 {
@@ -30,20 +31,30 @@ namespace FinalProject.DAL.Context
 			//	.WithOne(u => u.Company)
 			//	.HasForeignKey<Company>(v => v.AppUserId);
 
-			modelBuilder.Entity<WishList>(entity =>
-			{
-				entity.ToTable("WishList");
+			//modelBuilder.Entity<WishListVacancy>(entity =>
+			//{
+			//	entity.ToTable("WishList");
 
-				entity.HasIndex(e => e.VacancyId, "IX_WishList_VacancyId").IsUnique();
+			//	entity.HasIndex(e => e.VacancyId, "IX_WishList_VacancyId").IsUnique();
 
-				entity.HasIndex(e => e.VacantProfileId, "IX_WishList_VacantProfilId");
+			//	entity.HasIndex(e => e.VacantProfileId, "IX_WishList_VacantProfilId");
 
-				entity.HasOne(d => d.Vacancy).WithOne(p => p.WishList).HasForeignKey<WishList>(d => d.VacancyId);
+			//	entity.HasOne(d => d.Vacancy).WithOne(p => p.WishList).HasForeignKey<WishListVacancy>(d => d.VacancyId);
 
-				entity.HasOne(d => d.VacantProfile).WithMany(p => p.WishList)
-					.HasForeignKey(d => d.VacantProfileId)
-					.OnDelete(DeleteBehavior.ClientSetNull);
-			});
+			//	entity.HasOne(d => d.VacantProfile).WithMany(p => p.WishList)
+			//		.HasForeignKey(d => d.VacantProfileId)
+			//		.OnDelete(DeleteBehavior.ClientSetNull);
+			//});
+
+
+			//modelBuilder.Entity<WishListVacant>(entity =>
+			//{
+			//	entity.ToTable("WishListVacant");
+
+			//	entity.HasIndex(e => e.VacantProfileId, "IX_WishListVacant_VacantProfileId").IsUnique();
+
+			//	entity.HasOne(d => d.VacantProfile).WithMany(p => p.WishListVacant).HasForeignKey(e => e.VacantProfileId);
+			//});
 
 			modelBuilder.Entity<Advertising>(entity =>
 			{
@@ -63,6 +74,7 @@ namespace FinalProject.DAL.Context
 		public DbSet<Advertising> Advertising { get; set; }
 		public DbSet<Subscription> Subscriptions { get; set; }
 		public DbSet<VacantProfile> VacantProfiles { get; set; }
-		public DbSet<WishList> WishList { get; set; }
+		public DbSet<WishListVacancy> WishListVacancies { get; set; }
+		public DbSet<WishListVacant> WishListVacants { get; set; }
 	}
 }

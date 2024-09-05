@@ -33,6 +33,6 @@ namespace FinalProject.Domain.Entities
 		public int AdvertisingId {  get; set; }
 
 		//one to one
-		public WishList WishList { get; set; }
+		public WishListVacancy WishList { get; set; }
     }
 }

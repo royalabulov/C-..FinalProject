@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FinalProject.BLL.Mappers;
+using FinalProject.BLL.Models.Exception;
 using FinalProject.BLL.Models.Validations.Register;
 using FinalProject.BLL.Services.Implementation;
 using FinalProject.BLL.Services.Interface;
@@ -29,6 +30,7 @@ namespace FinalProject.BLL
 			services.AddScoped<IVacancyService, VacancyService>();
 			services.AddScoped<IAdvertisingService, AdvertisingService>();
 
+			
 
 			services.AddFluentValidationAutoValidation()
 				.AddFluentValidationClientsideAdapters()

@@ -25,6 +25,6 @@ namespace FinalProject.Domain.Entites
 
 
 		//one to many
-		public ICollection<WishList> WishList { get; set; }
+		public ICollection<WishListVacant> WishListVacant { get; set; }
 	}
 }
