@@ -50,6 +50,36 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
+		public async Task<GenericResponseApi<bool>> AddVacancyWishList(Vacancy vacancy)
+		{
+			var response = new GenericResponseApi<bool>();
+			var wishListVacancy = new WishListVacancy { Vacancy = vacancy };
+			await unitOfWork.GetRepository<WishListVacancy>().AddAsync(wishListVacancy);
+			await unitOfWork.Commit();
+			return response;
+		}
+
+		public async Task<GenericResponseApi<bool>> RemoveVacancyWishList(int id)
+		{
+			var response = new GenericResponseApi<bool>();
+
+			var getById = await unitOfWork.GetRepository<Vacancy>().GetById(id);
+			if(getById == null)
+			{
+				response.Failure("Id not found", 404);
+				return response;
+			}
+			unitOfWork.GetRepository<Vacancy>().Remove(getById);
+			await unitOfWork.Commit();
+
+			return response;
+		}
+
+
+
+
+
+
 
 
 		public async Task<GenericResponseApi<List<GetAllVacantWishListDTO>>> GetVacantWishList()
@@ -67,14 +97,6 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		public async Task<GenericResponseApi<bool>> AddVacancyWishList(Vacancy vacancy)
-		{
-			var response = new GenericResponseApi<bool>();
-			var wishListVacancy = new WishListVacancy { Vacancy = vacancy };
-			await unitOfWork.GetRepository<WishListVacancy>().AddAsync(wishListVacancy);
-			await unitOfWork.Commit();
-			return response;
-		}
 
 		public async Task<GenericResponseApi<bool>> AddVacantWishList(VacantProfile vacantProfile)
 		{
@@ -99,5 +121,6 @@ namespace FinalProject.BLL.Services.Implementation
 			await unitOfWork.Commit();
 			return response;
 		}
+
 	}
 }

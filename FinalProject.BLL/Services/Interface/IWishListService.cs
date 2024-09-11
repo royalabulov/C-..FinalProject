@@ -19,6 +19,7 @@ namespace FinalProject.BLL.Services.Interface
 
 		Task<GenericResponseApi<List<GetAllVacancyWishListDTO>>> GetVacancyWishList();
 		Task<GenericResponseApi<bool>> AddVacancyWishList(Vacancy vacancy);
+		Task<GenericResponseApi<bool>> RemoveVacancyWishList(int id);
 
 
 	}

@@ -9,14 +9,14 @@ namespace FinalProject.Domain.Entites
 {
 	public class Subscription : BaseEntity
 	{
-		public string HeaderName {  get; set; }
+		public string? HeaderName {  get; set; }
 		public int Price {  get; set; }
-		public string SubscriptionLevel {  get; set; }
-	
+		//public string? SubscriptionLevel {  get; set; }
+	    
 
 
-		//one to one
-		public int CompanyId {  get; set; }
-		public Company Company { get; set; }
+		////one to one
+		//public int CompanyId {  get; set; }
+		//public Company Company { get; set; } many
 	}
 }

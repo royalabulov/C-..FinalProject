@@ -13,7 +13,7 @@ namespace FinalProject.BLL.Services.Interface
 
 		Task UpdateRefreshToken(string refreshToken,AppUser user,DateTime accessTokenData);
 
-		Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string userId, string[] roles);
+		Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string Id, string[] roles);
 
 		Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName);
 

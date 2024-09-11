@@ -21,7 +21,7 @@ namespace FinalProject.Domain.Entities
 
 
 		//one to one
-		public Subscription Subscription { get; set; }
+		//public Subscription Subscription { get; set; }
 
 
 	    public int AppUserId {  get; set; }

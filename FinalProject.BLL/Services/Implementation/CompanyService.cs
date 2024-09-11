@@ -2,15 +2,13 @@
 using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
-using FinalProject.DAL.UnitOfWorkImplementation;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -18,11 +16,15 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
+		private readonly UserManager<AppUser> userManager;
+		private readonly IHttpContextAccessor httpContextAccessor;
 
-		public CompanyService(IMapper mapper,IUnitOfWork unitOfWork)
+		public CompanyService(IMapper mapper,IUnitOfWork unitOfWork,UserManager<AppUser> userManager,IHttpContextAccessor httpContextAccessor)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
+			this.userManager = userManager;
+			this.httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<GenericResponseApi<List<CompanyGetDTO>>> GetAllCompany()
@@ -59,6 +61,16 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Company data null", 404);
 				}
 				var mapping = mapper.Map<Company>(companyCreate);
+
+				var currentUser = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+				if(currentUser == null)
+				{
+					response.Failure("currentUser not found", 404);
+					return response;
+				}
+
+				mapping.AppUserId = int.Parse(currentUser);
 				await unitOfWork.GetRepository<Company>().AddAsync(mapping);
 				await unitOfWork.Commit();
 
@@ -103,12 +115,14 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var getById = await unitOfWork.GetRepository<Company>().GetById(companyUpdate.Id);
-				if(getById == null)
+				
+				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
 				}
 				var mapping = mapper.Map(companyUpdate, getById);
+
 				unitOfWork.GetRepository<Company>().Update(mapping);
 				await unitOfWork.Commit();
 			}
@@ -119,5 +133,10 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
+
+
+	
+
+
 	}
 }

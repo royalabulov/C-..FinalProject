@@ -13,5 +13,6 @@ namespace FinalProject.BLL.Models.DTOs.CompanyDTOs
 		public string About { get; set; }
 		public string Address { get; set; }
 		public string ContactNumber { get; set; }
+		public string SubscriptionLevel {  get; set; }
 	}
 }

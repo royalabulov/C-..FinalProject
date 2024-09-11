@@ -42,7 +42,7 @@ namespace FinalProject.API.Controllers
 
 
 
-		[Authorize(Roles = "Admin")]
+		//[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> CreateCompany(UserCreateDTO user)
 		{
@@ -53,9 +53,9 @@ namespace FinalProject.API.Controllers
 
 		[HttpPost]
 		
-		public async Task<IActionResult> AssignRoleToUserAsync(string userId, string[] roles)
+		public async Task<IActionResult> AssignRoleToUserAsync(string Id, string[] roles)
 		{
-			var result = await	registerService.AssignRoleToUserAsync($"{userId}", roles);
+			var result = await	registerService.AssignRoleToUserAsync($"{Id}", roles);
 			return StatusCode(result.StatusCode, result);
 		}
 

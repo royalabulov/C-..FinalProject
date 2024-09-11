@@ -39,9 +39,9 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpDelete]
-		public async Task<IActionResult> DeleteRole(int Id)
+		public async Task<IActionResult> DeleteRole(int id)
 		{
-			var result = await roleService.RemoveRole(Id);
+			var result = await roleService.RemoveRole(id);
 			return StatusCode(result.StatusCode, result);
 		}
     }

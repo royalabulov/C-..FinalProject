@@ -7,11 +7,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 namespace FinalProject.DAL.Context
 {
 
-	public class AppDBContext : IdentityDbContext<AppUser, AppRole, int>
+	public class AppDBContext(DbContextOptions<AppDBContext> options) : IdentityDbContext<AppUser, AppRole, int>(options)
 	{
-		public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
-		{ }
-
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
@@ -64,6 +61,28 @@ namespace FinalProject.DAL.Context
 
 				entity.HasOne(d => d.Vacancy).WithOne(p => p.Advertising).HasForeignKey<Advertising>(d => d.VacancyId);
 			});
+
+
+			modelBuilder.Entity<VacantProfile>(entity =>
+			{
+				entity.HasIndex(e => e.AppUserId, "IX_VacantProfiles_AppUserId").IsUnique();
+
+				entity.HasOne(d => d.AppUser).WithOne(p => p.VacantProfile).HasForeignKey<VacantProfile>(d => d.AppUserId);
+			});
+
+			modelBuilder.Entity<Company>(entity =>
+			{
+				entity.HasIndex(e => e.AppUserId, "IX_Companys_AppUserId").IsUnique();
+
+				
+
+				entity.HasOne(d => d.AppUser).WithOne(p => p.Company).HasForeignKey<Company>(d => d.AppUserId);
+
+			});
+
+
+		
+
 
 		}
 

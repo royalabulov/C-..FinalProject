@@ -4,7 +4,6 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -59,8 +58,10 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
+				
+				
 				var mapping = mapper.Map<AppUser>(userCreateDTO);
-
+				
 				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
 
 				if (userEntity.Succeeded)
@@ -171,11 +172,11 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 		}
 
-		public async Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string userId, string[] roles)
+		public async Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string Id, string[] roles)
 		{
 			var response = new GenericResponseApi<bool>();
 
-			AppUser user = await userManager.FindByIdAsync(userId);
+			var user = await userManager.FindByIdAsync(Id);
 			try
 			{
 				if (user != null)
@@ -185,12 +186,17 @@ namespace FinalProject.BLL.Services.Implementation
 					await userManager.RemoveFromRolesAsync(user, userRoles);
 					await userManager.AddToRolesAsync(user, roles);
 
-					return response;
+                    response.Data = true;
+					response.IsSuccess = true;
+					response.StatusCode = 200;
 				}
 			}
 			catch (Exception ex)
 			{
-				return response; //Xeta yazarsan
+				response.Data = false;
+				response.StatusCode = 500;
+				await Console.Out.WriteLineAsync(ex.Message);
+ 
 			}
 			return response;
 		}
@@ -199,22 +205,18 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<string[]>();
 
-
-			AppUser user = await userManager.FindByIdAsync(userIdOrName);
-
-			if (user == null)
-			{
-				user = await userManager.FindByNameAsync(userIdOrName);
-			}
+			var user = await userManager.FindByIdAsync(userIdOrName);
 
 			try
 			{
 				if (user != null)
 				{
 					var userRoles = await userManager.GetRolesAsync(user);
+
 					response.StatusCode = 200;
 					response.Data = userRoles.ToArray();
 				}
+				
 			}
 			catch (Exception ex)
 			{

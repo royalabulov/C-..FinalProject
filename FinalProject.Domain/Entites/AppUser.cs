@@ -7,12 +7,12 @@ namespace FinalProject.Domain.Entities
 	{
 		//one to one
 		
-		public Company Company { get; set; }
-		//problem var one to one da
+		public Company? Company { get; set; }
+
 
 		//one to one
 		
-		public VacantProfile VacantProfile { get; set; } 
+		public VacantProfile? VacantProfile { get; set; } 
 		
 
 	

@@ -55,24 +55,13 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("HeaderName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubscriptionLevel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId")
-                        .IsUnique();
 
                     b.ToTable("Subscriptions");
                 });
@@ -122,7 +111,7 @@ namespace FinalProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId")
+                    b.HasIndex(new[] { "AppUserId" }, "IX_VacantProfiles_AppUserId")
                         .IsUnique();
 
                     b.ToTable("VacantProfiles");
@@ -318,7 +307,7 @@ namespace FinalProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId")
+                    b.HasIndex(new[] { "AppUserId" }, "IX_Companys_AppUserId")
                         .IsUnique();
 
                     b.ToTable("Companys");
@@ -485,17 +474,6 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("Vacancy");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
-                {
-                    b.HasOne("FinalProject.Domain.Entities.Company", "Company")
-                        .WithOne("Subscription")
-                        .HasForeignKey("FinalProject.Domain.Entites.Subscription", "CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-                });
-
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.AppUser", "AppUser")
@@ -617,11 +595,9 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppUser", b =>
                 {
-                    b.Navigation("Company")
-                        .IsRequired();
+                    b.Navigation("Company");
 
-                    b.Navigation("VacantProfile")
-                        .IsRequired();
+                    b.Navigation("VacantProfile");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Category", b =>
@@ -631,9 +607,6 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Company", b =>
                 {
-                    b.Navigation("Subscription")
-                        .IsRequired();
-
                     b.Navigation("Vacancies");
                 });
 

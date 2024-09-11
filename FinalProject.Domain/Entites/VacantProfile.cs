@@ -20,8 +20,8 @@ namespace FinalProject.Domain.Entites
 
 		  
 		//one to one
+		public AppUser? AppUser { get; set; }
 		public int AppUserId { get; set; }
-		public AppUser AppUser { get; set; }
 
 
 		//one to many

@@ -29,6 +29,8 @@ namespace FinalProject.BLL
 			services.AddScoped<ICategoryService, CategoryService>();
 			services.AddScoped<IVacancyService, VacancyService>();
 			services.AddScoped<IAdvertisingService, AdvertisingService>();
+			services.AddScoped<IVacantProfileService, VacantProfileService>();
+
 
 			
 

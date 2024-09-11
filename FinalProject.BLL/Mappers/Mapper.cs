@@ -4,6 +4,8 @@ using FinalProject.BLL.Models.DTOs.CategoryDTOs;
 using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
+using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
+using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -40,6 +42,9 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<Category,GetAllCategoryDTO>().ReverseMap();
 			CreateMap<Category,CreateCategoryDTO>().ReverseMap();
 			CreateMap<Category,UpdateCategoryDTO>().ReverseMap();
+
+			CreateMap<VacantProfile,CreateVacantProfileDTO>().ReverseMap();
+			CreateMap<VacantProfile, GetAllVacantDTO>().ReverseMap();
 		}
 	}
 }

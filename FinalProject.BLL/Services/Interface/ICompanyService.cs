@@ -16,5 +16,8 @@ namespace FinalProject.BLL.Services.Interface
 		Task<GenericResponseApi<bool>> CreateCompany(CompanyCreateDTO companyCreate);
 		Task<GenericResponseApi<bool>> UpdateCompany(CompanyUpdateDTO companyUpdate);
 		Task<GenericResponseApi<bool>> DeleteCompany(int id);
+
+
+
 	}
 }

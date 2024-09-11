@@ -3,8 +3,11 @@ using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entites;
+using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +20,13 @@ namespace FinalProject.BLL.Services.Implementation
 	{	
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
+		private readonly UserManager<AppUser> userManager;
 
-		public VacantProfileService(IMapper mapper,IUnitOfWork unitOfWork)
+		public VacantProfileService(IMapper mapper,IUnitOfWork unitOfWork,UserManager<AppUser> userManager)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
+			this.userManager = userManager;
 		}
 
 		public async Task<GenericResponseApi<List<GetAllVacantDTO>>> AllVacant()
@@ -53,6 +58,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
+                 
 				if (createVacantProfile == null)
 				{
 					response.Failure("VacantProfile data null", 404);
@@ -69,6 +75,8 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
+
+
 
 		public async Task<GenericResponseApi<bool>> DeleteVacant(int id)
 		{

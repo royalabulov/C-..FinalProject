@@ -88,7 +88,18 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Id not found", 404);
 					return response;
 				}
-				await roleManager.DeleteAsync(getRoleId);
+				IdentityResult result = await roleManager.DeleteAsync(getRoleId);
+				if (result.Succeeded)
+				{
+					response.Data = result.Succeeded;
+					response.StatusCode = 200;
+				}
+				else
+				{
+					response.Data = result.Succeeded;
+					response.StatusCode = 400;
+				}
+
 			}
 			catch (Exception ex)
 			{

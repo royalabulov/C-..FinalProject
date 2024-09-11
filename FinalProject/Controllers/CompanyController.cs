@@ -1,5 +1,6 @@
 ﻿using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,11 @@ namespace FinalProject.API.Controllers
 		private readonly ICompanyService companyService;
 
 		public CompanyController(ICompanyService companyService)
-        {
+		{
 			this.companyService = companyService;
 		}
 
-		[Authorize(Roles = "Admin")]
+		//[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllCompany()
 		{
@@ -26,7 +27,7 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[Authorize(Roles = "Admin")]
+		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
 		[HttpPost]
 		public async Task<IActionResult> CreateCompany(CompanyCreateDTO companyCreate)
 		{
@@ -48,5 +49,5 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-    }
+	}
 }

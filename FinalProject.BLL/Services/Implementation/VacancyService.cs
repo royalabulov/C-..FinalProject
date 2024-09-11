@@ -3,9 +3,11 @@ using Azure;
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
+using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
 
-		public VacancyService( IMapper mapper,IUnitOfWork unitOfWork)
+		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
@@ -62,6 +64,7 @@ namespace FinalProject.BLL.Services.Implementation
 					return response;
 				}
 				var mapping = mapper.Map<Vacancy>(createVacancy);
+				
 
 				await unitOfWork.GetRepository<Vacancy>().AddAsync(mapping);
 				await unitOfWork.Commit();
@@ -73,6 +76,9 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
+
+		
+
 
 		public async Task<GenericResponseApi<bool>> DeleteVacancy(int Id)
 		{
@@ -106,7 +112,7 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var getById = await unitOfWork.GetRepository<Vacancy>().GetById(updateVacancy.Id);
-				if(getById == null)
+				if (getById == null)
 				{
 					response.Failure("Id not found", 404);
 					return response;
