@@ -7,7 +7,8 @@ namespace FinalProject.BLL.Services.Interface
 	public interface IRegisterService
 	{
 		Task<GenericResponseApi<List<AllUserGetDTO>>> GelAllUser();
-		Task<GenericResponseApi<bool>> Create(UserCreateDTO userCreateDTO);
+		Task<GenericResponseApi<bool>> CreateVacant(UserCreateDTO userCreateDTO);
+		Task<GenericResponseApi<bool>> CreateCompany(CreateCompanyDTO userCreateDTO); 
 		Task<GenericResponseApi<bool>> UpdateUser(UserUpdateDTO userUpdateDTO);
 		Task<GenericResponseApi<bool>> RemoveUser(int id);
 

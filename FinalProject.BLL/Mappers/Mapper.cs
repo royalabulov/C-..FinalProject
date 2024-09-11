@@ -23,7 +23,7 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<AppUser, AllUserGetDTO>().ReverseMap();
 			CreateMap<AppUser, UserUpdateDTO>().ReverseMap();
 			CreateMap<UserCreateDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
-
+			CreateMap<CreateCompanyDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
 			//ROLE
 			CreateMap<AppRole, AppRoleGetDTO>().ReverseMap();
 			CreateMap<AppRole, AppRoleUpdateDTO>().ReverseMap();

@@ -27,7 +27,7 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
 		[HttpPost]
 		public async Task<IActionResult> CreateCompany(CompanyCreateDTO companyCreate)
 		{

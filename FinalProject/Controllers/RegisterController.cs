@@ -36,7 +36,7 @@ namespace FinalProject.API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateUser(UserCreateDTO userCreateDTO)
 		{
-			var result = await registerService.Create(userCreateDTO);
+			var result = await registerService.CreateVacant(userCreateDTO);
 			return StatusCode(result.StatusCode, result);
 		}
 
@@ -44,9 +44,9 @@ namespace FinalProject.API.Controllers
 
 		//[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public async Task<IActionResult> CreateCompany(UserCreateDTO user)
+		public async Task<IActionResult> CreateCompany(CreateCompanyDTO companyCreateDTO)
 		{
-			var result = await registerService.Create(user);
+			var result = await registerService.CreateCompany(companyCreateDTO);
 			return StatusCode(result.StatusCode, result);
 		}
 

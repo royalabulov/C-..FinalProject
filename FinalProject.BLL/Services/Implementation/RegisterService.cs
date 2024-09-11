@@ -3,8 +3,10 @@ using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 namespace FinalProject.BLL.Services.Implementation
@@ -14,13 +16,17 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly UserManager<AppUser> userManager;
 		private readonly IMapper mapper;
 
+
 		public RegisterService(UserManager<AppUser> userManager, IMapper mapper)
 		{
 			this.userManager = userManager;
 			this.mapper = mapper;
+
 		}
 
-		public async Task<GenericResponseApi<bool>> Create(UserCreateDTO userCreateDTO)
+
+
+		public async Task<GenericResponseApi<bool>> CreateVacant(UserCreateDTO userCreateDTO)
 		{
 			var response = new GenericResponseApi<bool>();
 
@@ -39,8 +45,8 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
 				}
 				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
-				//if (user != null)
-				//	await userManager.AddToRoleAsync(user, "Vacant");
+				if (user != null)
+					await userManager.AddToRoleAsync(user, "Vacant");
 
 
 			}
@@ -52,26 +58,27 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		public async Task<GenericResponseApi<bool>> CreateCompany(UserCreateDTO userCreateDTO)
+		public async Task<GenericResponseApi<bool>> CreateCompany(CreateCompanyDTO createCompanyDTO)
 		{
 			var response = new GenericResponseApi<bool>();
 
 			try
 			{
-				
-				
-				var mapping = mapper.Map<AppUser>(userCreateDTO);
-				
-				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
+
+				var mapping = mapper.Map<AppUser>(createCompanyDTO);
+
+				var userEntity = await userManager.CreateAsync(mapping, createCompanyDTO.Password);
 
 				if (userEntity.Succeeded)
 				{
 					response.Success(true);
 				}
 
-				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
+				var user = await userManager.FindByEmailAsync(createCompanyDTO.Email);
 				if (user != null)
 					await userManager.AddToRoleAsync(user, "Company");
+				
+
 			}
 			catch (Exception ex)
 			{
@@ -186,7 +193,7 @@ namespace FinalProject.BLL.Services.Implementation
 					await userManager.RemoveFromRolesAsync(user, userRoles);
 					await userManager.AddToRolesAsync(user, roles);
 
-                    response.Data = true;
+					response.Data = true;
 					response.IsSuccess = true;
 					response.StatusCode = 200;
 				}
@@ -196,7 +203,7 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Data = false;
 				response.StatusCode = 500;
 				await Console.Out.WriteLineAsync(ex.Message);
- 
+
 			}
 			return response;
 		}
@@ -216,7 +223,7 @@ namespace FinalProject.BLL.Services.Implementation
 					response.StatusCode = 200;
 					response.Data = userRoles.ToArray();
 				}
-				
+
 			}
 			catch (Exception ex)
 			{
@@ -226,5 +233,7 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
+
+		
 	}
 }

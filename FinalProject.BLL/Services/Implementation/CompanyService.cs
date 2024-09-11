@@ -40,6 +40,7 @@ namespace FinalProject.BLL.Services.Implementation
 					return response;
 				}
 				var mapping = mapper.Map<List<CompanyGetDTO>>(companyEntity);
+
 				response.Success(mapping);
 			}
 			catch (Exception ex)
@@ -62,15 +63,15 @@ namespace FinalProject.BLL.Services.Implementation
 				}
 				var mapping = mapper.Map<Company>(companyCreate);
 
-				var currentUser = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+				var currentCompany = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-				if(currentUser == null)
+				if(currentCompany == null)
 				{
-					response.Failure("currentUser not found", 404);
+					response.Failure("currentCompany not found", 404);
 					return response;
 				}
 
-				mapping.AppUserId = int.Parse(currentUser);
+				mapping.AppUserId = int.Parse(currentCompany);
 				await unitOfWork.GetRepository<Company>().AddAsync(mapping);
 				await unitOfWork.Commit();
 
