@@ -9,7 +9,7 @@ namespace FinalProject.Domain.Entites
 {
     public class WishListVacant : BaseEntity
     {
-		//one to many
+	
 		public int VacantProfileId { get; set; }
 		public VacantProfile VacantProfile { get; set; }
 	}

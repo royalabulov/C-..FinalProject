@@ -18,21 +18,24 @@ namespace FinalProject.Domain.Entities
 		public DateTime ExpireDate { get; set; }
 
 
-		//one to many
+
 		public int CompanyId {  get; set; }
 		public Company Company { get; set; }	
 
 
-		//one to many
+	
 		public int CategoryId {  get; set; }
 		public Category? Category { get; set; }
 
 
-		//one to one 
+	
 		public Advertising Advertising { get; set; }
 		public int AdvertisingId {  get; set; }
 
-		//one to one
-		public WishListVacancy WishList { get; set; }
+		
+		public ICollection<WishListVacancy> WishListVacancy { get; set; }
+
+
+		public ICollection<WishListVacant> WishListVacant { get; set; }
     }
 }

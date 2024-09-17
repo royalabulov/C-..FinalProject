@@ -50,13 +50,49 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		public async Task<GenericResponseApi<bool>> AddVacancyWishList(Vacancy vacancy)
+		public async Task<GenericResponseApi<bool>> AddVacancyWishList(AddVacancyWishListDTO addVacancyWishListDTO)
 		{
 			var response = new GenericResponseApi<bool>();
-			var wishListVacancy = new WishListVacancy { Vacancy = vacancy };
-			await unitOfWork.GetRepository<WishListVacancy>().AddAsync(wishListVacancy);
-			await unitOfWork.Commit();
+
+			var vacancyEntity = await unitOfWork.GetRepository<Vacancy>()
+				.FirstOrDefaultAsync(x => x.Id == addVacancyWishListDTO.vacancyId);
+
+			var wishListEntity = await unitOfWork.GetRepository<WishListVacancy>()
+				.GetAsQueryable()
+				.Include(x => x.Vacancy)
+				.FirstOrDefaultAsync(y => y.Id == addVacancyWishListDTO.wishListId);
+
+
+			if (wishListEntity == null)
+			{
+				wishListEntity = new WishListVacancy
+				{
+					Id = addVacancyWishListDTO.wishListId,
+					Vacancy = new List<Vacancy>()
+				};
+			}
+
+			await unitOfWork.GetRepository<WishListVacancy>().AddAsync(wishListEntity);
+
+
+			if (vacancyEntity != null && vacancyEntity != null)
+			{
+				if (!wishListEntity.Vacancy.Contains(vacancyEntity))
+				{
+					wishListEntity.Vacancy.Add(vacancyEntity);
+
+					await unitOfWork.Commit();
+					response.Success(true);
+				}
+			}
+			else
+			{
+				response.Success(false);
+				response.ErrorMesssage = "Wishlist or Vacancy not found";
+			}
+
 			return response;
+
 		}
 
 		public async Task<GenericResponseApi<bool>> RemoveVacancyWishList(int id)
@@ -64,7 +100,7 @@ namespace FinalProject.BLL.Services.Implementation
 			var response = new GenericResponseApi<bool>();
 
 			var getById = await unitOfWork.GetRepository<Vacancy>().GetById(id);
-			if(getById == null)
+			if (getById == null)
 			{
 				response.Failure("Id not found", 404);
 				return response;

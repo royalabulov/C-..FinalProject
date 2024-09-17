@@ -5,6 +5,7 @@ using FinalProject.BLL.Models.DTOs.CompanyDTOs;
 using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
+using FinalProject.BLL.Models.DTOs.WishListDTOs;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using System;
@@ -45,6 +46,8 @@ namespace FinalProject.BLL.Mappers
 
 			CreateMap<VacantProfile,CreateVacantProfileDTO>().ReverseMap();
 			CreateMap<VacantProfile, GetAllVacantDTO>().ReverseMap();
+
+			CreateMap<WishListVacancy, GetAllVacancyWishListDTO>().ForMember(a=>a.VacancyName,opt=>opt.MapFrom(x=>x.Vacancy.ToList()));
 		}
 	}
 }

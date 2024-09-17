@@ -9,9 +9,8 @@ namespace FinalProject.Domain.Entites
 {
 	public class WishListVacancy : BaseEntity
 	{
-		//one to one
-		public int VacancyId {  get; set; }
-		public Vacancy Vacancy { get; set;}
+		
+		public ICollection<Vacancy> Vacancy { get; set; }
 
 	}
 }
