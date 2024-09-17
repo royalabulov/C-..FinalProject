@@ -11,12 +11,13 @@ namespace FinalProject.Domain.Entites
 	{
 		public string? HeaderName {  get; set; }
 		public int Price {  get; set; }
-		//public string? SubscriptionLevel {  get; set; }
-	    
+		public string? SubscriptionLevel { get; set; }
+		public DateTime SubscriptionExpireTime { get; set; }
 
 
-		////one to one
-		//public int CompanyId {  get; set; }
-		//public Company Company { get; set; } many
+
+		public int CompanyId { get; set; }
+		public Company? Company { get; set; }
+	
 	}
 }

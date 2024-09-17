@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240910144317_added01")]
-    partial class added01
+    [Migration("20240913195344_added11")]
+    partial class added11
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -270,7 +270,6 @@ namespace FinalProject.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("HeaderName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -356,11 +355,11 @@ namespace FinalProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex(new[] { "CategoryId" }, "IX_Vacancy_CategoryId");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex(new[] { "CompanyId" }, "IX_Vacancy_CompanyId");
 
-                    b.ToTable("Vacancy");
+                    b.ToTable("Vacancy", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

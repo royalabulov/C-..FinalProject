@@ -16,7 +16,7 @@ namespace FinalProject.Domain.Repositories
 		Task AddAsync(T entity);
 		void Remove(T entity);
 		void Update(T entity);
-
+		Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
 
 	}
 }

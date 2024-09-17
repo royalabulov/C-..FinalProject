@@ -13,18 +13,18 @@ namespace FinalProject.Domain.Entities
 		public string About { get; set; }
 		public string Address { get; set; }
 		public string ContactNumber { get; set; }
-		public DateTime SubscriptionExpireTime { get; set; }
+	
 
 
 		public ICollection<Vacancy> Vacancies { get; set; }
 
 
 
-		//one to one
-		//public Subscription Subscription { get; set; }
+	
+		public ICollection<Subscription> Subscriptions { get; set; }
 
 
-	    public int AppUserId {  get; set; }
+		public int AppUserId {  get; set; }
 		public AppUser AppUser { get; set; }
 
 	}

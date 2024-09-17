@@ -8,10 +8,10 @@ namespace FinalProject.Domain.Entities
 {
 	public class Category : BaseEntity
 	{
-		public string HeaderName { get; set; }
+		public string? HeaderName { get; set; }
 
 		//one to many
-        public ICollection<Vacancy> Vacancy { get; set; }
+        public ICollection<Vacancy>? Vacancy { get; set; }
 
 
 

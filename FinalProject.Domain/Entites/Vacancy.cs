@@ -25,7 +25,7 @@ namespace FinalProject.Domain.Entities
 
 		//one to many
 		public int CategoryId {  get; set; }
-		public Category Category { get; set; }
+		public Category? Category { get; set; }
 
 
 		//one to one 

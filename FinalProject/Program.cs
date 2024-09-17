@@ -43,6 +43,16 @@ services.AddIdentity<AppUser, AppRole>(op =>
 
 
 
+services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll", policy =>
+	{
+		policy.AllowAnyOrigin()
+			  .AllowAnyMethod()
+			  .AllowAnyHeader();
+	});
+});
+
 
 services.AddSwaggerGen(c =>
 {
@@ -121,6 +131,8 @@ if (app.Environment.IsDevelopment())
 }
 
 
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 

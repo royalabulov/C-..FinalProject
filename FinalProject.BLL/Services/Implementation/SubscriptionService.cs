@@ -4,12 +4,7 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.UnitOfWorkInterface;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {

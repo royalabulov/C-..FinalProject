@@ -13,5 +13,8 @@ namespace FinalProject.BLL.Models.DTOs.VacancyDTOs
 		public string Requirements { get; set; }
 		public DateTime CreateDate { get; set; }
 		public DateTime ExpireDate { get; set; }
+		public int CompanyId { get; set; }
+		public string CategoryName {  get; set; }
+
 	}
 }

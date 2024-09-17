@@ -74,7 +74,7 @@ namespace FinalProject.BLL.Services.Implementation
 				mapping.AppUserId = int.Parse(currentCompany);
 				await unitOfWork.GetRepository<Company>().AddAsync(mapping);
 				await unitOfWork.Commit();
-
+				response.Success(true);
 			}
 			catch (Exception ex)
 			{
@@ -98,7 +98,7 @@ namespace FinalProject.BLL.Services.Implementation
 				}
 				unitOfWork.GetRepository<Company>().Remove(getById);
 				await unitOfWork.Commit();
-
+				response.Success(true);
 			}
 			catch (Exception ex)
 			{

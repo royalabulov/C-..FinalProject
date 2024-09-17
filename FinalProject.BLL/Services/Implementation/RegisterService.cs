@@ -73,6 +73,10 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					response.Success(true);
 				}
+				else
+				{
+					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
+				}
 
 				var user = await userManager.FindByEmailAsync(createCompanyDTO.Email);
 				if (user != null)

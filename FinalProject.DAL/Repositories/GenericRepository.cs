@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +26,10 @@ namespace FinalProject.DAL.Repositories
 			await table.AddAsync(entity);
 		}
 
+		public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+		{
+			return await table.FirstOrDefaultAsync(predicate);
+		}
 
 		public async Task<IEnumerable<T>> GetAll()
 		{

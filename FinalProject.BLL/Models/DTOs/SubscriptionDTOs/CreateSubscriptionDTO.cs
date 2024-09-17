@@ -10,6 +10,8 @@ namespace FinalProject.BLL.Models.DTOs.SubscriptionDTOs
 	{
 		public string? HeaderName { get; set; }
 		public int Price { get; set; }
+		public string CompanyId { get; set; }
 		public string? SubscriptionLevel { get; set; }
-	}
+		public DateTime SubscriptionExpireTime { get; set; }
+}
 }

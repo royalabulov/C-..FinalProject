@@ -1,18 +1,11 @@
 ﻿using AutoMapper;
-using Azure;
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
-using FinalProject.Domain.Entites;
+using FinalProject.DAL.Context;
 using FinalProject.Domain.Entities;
-using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -20,11 +13,14 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
+		private readonly AppDBContext context;
 
-		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork)
+
+		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork,AppDBContext context)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
+			this.context = context;
 		}
 		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacancy()
 		{
@@ -32,6 +28,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
+
 				var vacancyEntity = await unitOfWork.GetRepository<Vacancy>().GetAll();
 
 				if (vacancyEntity == null)
@@ -63,11 +60,25 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Failure("Vacancy data null", 404);
 					return response;
 				}
-				var mapping = mapper.Map<Vacancy>(createVacancy);
+
+				var category = await unitOfWork.GetRepository<Category>().FirstOrDefaultAsync(c=>c.HeaderName == createVacancy.CategoryName);
+
+				if (category == null)
+				{
+					response.Failure("Category not found.", 404);
+					return response;
+				}
 				
 
+				var mapping = mapper.Map<Vacancy>(createVacancy);
+				mapping.CategoryId = category.Id;
+				mapping.CompanyId = createVacancy.CompanyId;
 				await unitOfWork.GetRepository<Vacancy>().AddAsync(mapping);
+				Console.WriteLine("Before commit...");
 				await unitOfWork.Commit();
+				Console.WriteLine("After commit - Commit was successful!");
+
+				response.Success(true);
 			}
 			catch (Exception ex)
 			{
@@ -77,7 +88,7 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		
+
 
 
 		public async Task<GenericResponseApi<bool>> DeleteVacancy(int Id)

@@ -80,8 +80,19 @@ namespace FinalProject.DAL.Context
 
 			});
 
+			modelBuilder.Entity<Vacancy>(entity =>
+			{
+				entity.ToTable("Vacancy");
 
-		
+				entity.HasIndex(e => e.CategoryId, "IX_Vacancy_CategoryId");
+
+				entity.HasIndex(e => e.CompanyId, "IX_Vacancy_CompanyId");
+
+				entity.HasOne(d => d.Category).WithMany(p => p.Vacancy).HasForeignKey(d => d.CategoryId);
+
+				entity.HasOne(d => d.Company).WithMany(p => p.Vacancies).HasForeignKey(d => d.CompanyId);
+			});
+
 
 
 		}
