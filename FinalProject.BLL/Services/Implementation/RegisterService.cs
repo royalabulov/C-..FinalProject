@@ -33,7 +33,13 @@ namespace FinalProject.BLL.Services.Implementation
 			try
 			{
 				var mapping = mapper.Map<AppUser>(userCreateDTO);
+				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
 
+				if (user != null)
+				{
+					await userManager.AddToRoleAsync(user, "Vacant");
+
+				}
 				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
 
 				if (userEntity.Succeeded)
@@ -44,9 +50,7 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
 				}
-				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
-				if (user != null)
-					await userManager.AddToRoleAsync(user, "Vacant");
+
 
 
 			}
@@ -81,7 +85,7 @@ namespace FinalProject.BLL.Services.Implementation
 				var user = await userManager.FindByEmailAsync(createCompanyDTO.Email);
 				if (user != null)
 					await userManager.AddToRoleAsync(user, "Company");
-				
+
 
 			}
 			catch (Exception ex)
@@ -238,6 +242,6 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		
+
 	}
 }

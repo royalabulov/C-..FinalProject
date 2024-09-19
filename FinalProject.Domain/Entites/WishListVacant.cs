@@ -9,8 +9,10 @@ namespace FinalProject.Domain.Entites
 {
     public class WishListVacant : BaseEntity
     {
-	
 		public int VacantProfileId { get; set; }
-		public VacantProfile VacantProfile { get; set; }
+	    public VacantProfile? VacantProfile { get; set; }
+
+		public int VacancyId { get; set; }
+		public Vacancy? Vacancy { get; set; }
 	}
 }

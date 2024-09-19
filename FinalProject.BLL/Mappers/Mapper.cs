@@ -47,7 +47,17 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<VacantProfile,CreateVacantProfileDTO>().ReverseMap();
 			CreateMap<VacantProfile, GetAllVacantDTO>().ReverseMap();
 
-			CreateMap<WishListVacancy, GetAllVacancyWishListDTO>().ForMember(a=>a.VacancyName,opt=>opt.MapFrom(x=>x.Vacancy.ToList()));
+			CreateMap<WishListVacancy, GetAllVacancyWishListDTO>()
+				.ForMember(a=>a.VacancyName,opt=>opt.MapFrom(x=>x.Vacancy.ToList()));
+
+			CreateMap<WishListVacant, GetAllVacancyDTO>()
+				.ForMember(a => a.Id, opt => opt.MapFrom(src => src.Vacancy.Id))
+				.ForMember(a=> a.HeaderName, opt => opt.MapFrom(src => src.Vacancy.HeaderName))
+				.ForMember(a=>a.Responsibilities, opt => opt.MapFrom(src => src.Vacancy.Responsibilities))
+				.ForMember(a=>a.Requirements, opt => opt.MapFrom(src => src.Vacancy.Requirements));
+
+			CreateMap<WishListVacant, AddVacantWishListDTO>().ReverseMap();
+
 		}
 	}
 }

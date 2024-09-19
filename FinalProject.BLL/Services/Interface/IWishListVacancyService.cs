@@ -10,16 +10,14 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Services.Interface
 {
-	public interface IWishListService
+	public interface IWishListVacancyService
 	{
-		Task<GenericResponseApi<List<GetAllVacantWishListDTO>>> GetVacantWishList();
-		Task<GenericResponseApi<bool>> AddVacantWishList(VacantProfile vacantProfile);
-		Task<GenericResponseApi<bool>> RemoveVacantWishList(int Id);
+	
 
 
 		Task<GenericResponseApi<List<GetAllVacancyWishListDTO>>> GetVacancyWishList();
 		Task<GenericResponseApi<bool>> AddVacancyWishList(AddVacancyWishListDTO addVacancyWishListDTO);
-		Task<GenericResponseApi<bool>> RemoveVacancyWishList(int id);
+		Task<GenericResponseApi<bool>> RemoveVacancyWishList(int wishListId, int vacancyId);
 
 
 	}

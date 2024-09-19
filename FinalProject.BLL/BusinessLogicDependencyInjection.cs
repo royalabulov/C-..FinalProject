@@ -30,8 +30,8 @@ namespace FinalProject.BLL
 			services.AddScoped<IVacancyService, VacancyService>();
 			services.AddScoped<IAdvertisingService, AdvertisingService>();
 			services.AddScoped<IVacantProfileService, VacantProfileService>();
-			services.AddScoped<IWishListService, WishListService>();
-
+			services.AddScoped<IWishListVacancyService,WishListVacancyService>();
+			services.AddScoped<IWishListVacantService, WishListVacantService>();
 			
 
 			services.AddFluentValidationAutoValidation()

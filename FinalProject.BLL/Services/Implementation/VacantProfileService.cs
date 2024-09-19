@@ -82,6 +82,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 				await unitOfWork.GetRepository<VacantProfile>().AddAsync(mapping);
 				await unitOfWork.Commit();
+				response.Success(true);
 			}
 			catch (Exception ex)
 			{

@@ -1,9 +1,5 @@
 ﻿using FinalProject.BLL.Models.DTOs.WishListDTOs;
-using FinalProject.BLL.Services.Implementation;
 using FinalProject.BLL.Services.Interface;
-using FinalProject.Domain.Entites;
-using FinalProject.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
@@ -12,9 +8,9 @@ namespace FinalProject.API.Controllers
 	[ApiController]
 	public class WishListVacancyController : ControllerBase
 	{
-		private readonly IWishListService wishListService;
+		private readonly IWishListVacancyService wishListService;
 
-		public WishListVacancyController(IWishListService wishListService)
+		public WishListVacancyController(IWishListVacancyService wishListService)
         {
 			this.wishListService = wishListService;
 		}
@@ -36,5 +32,12 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-    }
+		[HttpDelete]
+		public async Task<IActionResult> RemoveWishList(int wishListId, int vacancyId)
+		{
+			var result = await wishListService.RemoveVacancyWishList(wishListId,vacancyId);
+			return StatusCode(result.StatusCode, result);
+		}
+
+	}
 }

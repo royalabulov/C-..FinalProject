@@ -9,6 +9,6 @@ namespace FinalProject.BLL.Models.DTOs.WishListDTOs
 	public class GetAllVacancyWishListDTO
 	{
 		public int Id {  get; set; }
-		public string VacancyName { get; set; }
+		public string? VacancyName { get; set; }
 	}
 }
