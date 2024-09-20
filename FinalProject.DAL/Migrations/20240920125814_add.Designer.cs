@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240919094622_added31")]
-    partial class added31
+    [Migration("20240920125814_add")]
+    partial class add
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,38 +89,30 @@ namespace FinalProject.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("About")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AppUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("Experience")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Number")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Skill")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialMedia")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -152,7 +144,17 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("VacancyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VacantProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("VacancyId");
+
+                    b.HasIndex("VacantProfileId");
 
                     b.ToTable("WishListVacants");
                 });
@@ -477,21 +479,6 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("VacancyWishListVacancy");
                 });
 
-            modelBuilder.Entity("VacantProfileWishListVacant", b =>
-                {
-                    b.Property<int>("VacantProfilesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WishListVacantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("VacantProfilesId", "WishListVacantId");
-
-                    b.HasIndex("WishListVacantId");
-
-                    b.ToTable("VacantProfileWishListVacant");
-                });
-
             modelBuilder.Entity("FinalProject.Domain.Entites.Advertising", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
@@ -523,6 +510,25 @@ namespace FinalProject.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
+                        .WithMany("WishListVacant")
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
+                        .WithMany("WishListVacant")
+                        .HasForeignKey("VacantProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vacancy");
+
+                    b.Navigation("VacantProfile");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Company", b =>
@@ -621,19 +627,9 @@ namespace FinalProject.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VacantProfileWishListVacant", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
                 {
-                    b.HasOne("FinalProject.Domain.Entites.VacantProfile", null)
-                        .WithMany()
-                        .HasForeignKey("VacantProfilesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FinalProject.Domain.Entites.WishListVacant", null)
-                        .WithMany()
-                        .HasForeignKey("WishListVacantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("WishListVacant");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.AppUser", b =>
@@ -659,6 +655,8 @@ namespace FinalProject.DAL.Migrations
                 {
                     b.Navigation("Advertising")
                         .IsRequired();
+
+                    b.Navigation("WishListVacant");
                 });
 #pragma warning restore 612, 618
         }

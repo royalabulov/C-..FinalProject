@@ -13,10 +13,10 @@ namespace FinalProject.Domain.Entities
 		public string HeaderName { get; set; }
 		public string Responsibilities { get; set; }
 		public string Requirements { get; set; }
-		public DateTime CreateDate { get; set; }
-		public DateTime UpdateDate { get; set; }
+		public DateTime CreateDate { get; set; } = DateTime.Now;
+		public DateTime UpdateDate { get; set; } = DateTime.Now;
 		public DateTime ExpireDate { get; set; }
-
+		public bool IsPremium { get; set; } = false;
 
 
 		public int CompanyId {  get; set; }
@@ -29,10 +29,9 @@ namespace FinalProject.Domain.Entities
 
 
 	
-		public Advertising Advertising { get; set; }
-		public int AdvertisingId {  get; set; }
+		public ICollection<Advertising> Advertising { get; set; }
 
-		
+		public ICollection<WishListVacancy> WishListVacancy { get; set; }
 		public ICollection<WishListVacant> WishListVacant { get; set; }
 
 	

@@ -7,11 +7,7 @@ using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -34,18 +30,19 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var vacant = await unitOfWork.GetRepository<VacantProfile>()
 				.GetAsQueryable()
-				.Include(wl => wl.WishListVacants)
-				.ThenInclude(v=>v.Vacancy).ToListAsync();
+				.Include(wl => wl.WishListVacant)
+				.ThenInclude(v => v.Vacancy).ToListAsync();
 
-			if(vacant == null)
+			if (vacant == null)
 			{
 				response.Failure("No vacant profiles found", 404);
 				return response;
 			}
 
-			var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacant.Select(x=>x.WishListVacants).ToList().Distinct().ToList());
+			var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacant.Select(x => x.WishListVacant).ToList().Distinct().ToList());
 
-			response.Success(mapping);
+	        response.Success(mapping);
+			
 			return response;
 		}
 
@@ -66,9 +63,14 @@ namespace FinalProject.BLL.Services.Implementation
 				return response;
 			}
 
-			 var wishListProfile = mapper.Map<WishListVacant>(addVacant);
+
+
+			var wishListProfile = mapper.Map<WishListVacant>(addVacant);
+			//wishListProfile.VacantProfileId = addVacant.VacantProfileId;
+			//wishListProfile.VacancyId = addVacant.VacancyId;
 
 			await unitOfWork.GetRepository<WishListVacant>().AddAsync(wishListProfile);
+			
 			await unitOfWork.Commit();
 			response.Success(true);
 
@@ -81,5 +83,5 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			throw new NotImplementedException();
 		}
-	}	
+	}
 }

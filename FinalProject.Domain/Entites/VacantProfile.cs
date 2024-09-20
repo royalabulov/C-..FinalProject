@@ -24,6 +24,6 @@ namespace FinalProject.Domain.Entites
 		public int AppUserId { get; set; }
 
 
-		public ICollection<WishListVacant>? WishListVacants { get; set; }
+		public ICollection<WishListVacant> WishListVacant { get; set; }
 	}
 }

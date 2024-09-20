@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240913195344_added11")]
-    partial class added11
+    [Migration("20240920173836_addda")]
+    partial class addda
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,18 +36,23 @@ namespace FinalProject.DAL.Migrations
                     b.Property<DateTime>("ExpireTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("VacancyId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "VacancyId" }, "IX_Advertising_VacancyId")
-                        .IsUnique();
+                    b.HasIndex("VacancyId");
 
-                    b.ToTable("Advertising", (string)null);
+                    b.ToTable("Advertising");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
@@ -58,13 +63,24 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("HeaderName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("SubscriptionExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SubscriptionLevel")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Subscriptions");
                 });
@@ -78,38 +94,30 @@ namespace FinalProject.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("About")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AppUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("Experience")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Number")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Skill")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialMedia")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -128,13 +136,7 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("VacancyId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VacancyId")
-                        .IsUnique();
 
                     b.ToTable("WishListVacancies");
                 });
@@ -147,10 +149,15 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("VacancyId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VacantProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("VacancyId");
 
                     b.HasIndex("VacantProfileId");
 
@@ -304,9 +311,6 @@ namespace FinalProject.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SubscriptionExpireTime")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "AppUserId" }, "IX_Companys_AppUserId")
@@ -323,9 +327,6 @@ namespace FinalProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AdvertisingId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -341,6 +342,9 @@ namespace FinalProject.DAL.Migrations
                     b.Property<string>("HeaderName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Requirements")
                         .IsRequired()
@@ -465,15 +469,41 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("VacancyWishListVacancy", b =>
+                {
+                    b.Property<int>("VacancyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WishListVacancyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("VacancyId", "WishListVacancyId");
+
+                    b.HasIndex("WishListVacancyId");
+
+                    b.ToTable("VacancyWishListVacancy");
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entites.Advertising", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
-                        .WithOne("Advertising")
-                        .HasForeignKey("FinalProject.Domain.Entites.Advertising", "VacancyId")
+                        .WithMany("Advertising")
+                        .HasForeignKey("VacancyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Vacancy");
+                });
+
+            modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.Company", "Company")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
@@ -487,24 +517,21 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacancy", b =>
+            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Vacancy", "Vacancy")
-                        .WithOne("WishList")
-                        .HasForeignKey("FinalProject.Domain.Entites.WishListVacancy", "VacancyId")
+                        .WithMany("WishListVacant")
+                        .HasForeignKey("VacancyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Vacancy");
-                });
-
-            modelBuilder.Entity("FinalProject.Domain.Entites.WishListVacant", b =>
-                {
                     b.HasOne("FinalProject.Domain.Entites.VacantProfile", "VacantProfile")
                         .WithMany("WishListVacant")
                         .HasForeignKey("VacantProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Vacancy");
 
                     b.Navigation("VacantProfile");
                 });
@@ -590,6 +617,21 @@ namespace FinalProject.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VacancyWishListVacancy", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.Vacancy", null)
+                        .WithMany()
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProject.Domain.Entites.WishListVacancy", null)
+                        .WithMany()
+                        .HasForeignKey("WishListVacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
                 {
                     b.Navigation("WishListVacant");
@@ -609,16 +651,16 @@ namespace FinalProject.DAL.Migrations
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Company", b =>
                 {
+                    b.Navigation("Subscriptions");
+
                     b.Navigation("Vacancies");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Vacancy", b =>
                 {
-                    b.Navigation("Advertising")
-                        .IsRequired();
+                    b.Navigation("Advertising");
 
-                    b.Navigation("WishList")
-                        .IsRequired();
+                    b.Navigation("WishListVacant");
                 });
 #pragma warning restore 612, 618
         }

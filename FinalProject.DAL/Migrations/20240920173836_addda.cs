@@ -5,7 +5,7 @@
 namespace FinalProject.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class added11 : Migration
+    public partial class addda : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

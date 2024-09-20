@@ -13,68 +13,40 @@ namespace FinalProject.DAL.Context
 		{
 			base.OnModelCreating(modelBuilder);
 
-			//modelBuilder.Entity<VacantProfile>()
-			//	.HasOne(v => v.AppUser)
-			//	.WithOne(u => u.VacantProfile)
-			//	.HasForeignKey<VacantProfile>(v => v.AppUserId);
 
-			//modelBuilder.Entity<AppUser>()
-			//	.HasOne(u => u.Company)
-			//	.WithOne(v => v.AppUser)
-			//	.HasForeignKey<AppUser>(u => u.CompanyId);
-
-			//modelBuilder.Entity<Company>()
-			//	.HasOne(v => v.AppUser)
-			//	.WithOne(u => u.Company)
-			//	.HasForeignKey<Company>(v => v.AppUserId);
-
-			//modelBuilder.Entity<WishListVacancy>(entity =>
-			//{
-			//	entity.ToTable("WishList");
-
-			//	entity.HasIndex(e => e.VacancyId, "IX_WishList_VacancyId").IsUnique();
-
-			//	entity.HasIndex(e => e.VacantProfileId, "IX_WishList_VacantProfilId");
-
-			//	entity.HasOne(d => d.Vacancy).WithOne(p => p.WishList).HasForeignKey<WishListVacancy>(d => d.VacancyId);
-
-			//	entity.HasOne(d => d.VacantProfile).WithMany(p => p.WishList)
-			//		.HasForeignKey(d => d.VacantProfileId)
-			//		.OnDelete(DeleteBehavior.ClientSetNull);
-			//});
+			modelBuilder.Entity<WishListVacant>()
+				.HasOne(wl => wl.VacantProfile)
+				.WithMany(vp => vp.WishListVacant)
+				.HasForeignKey(wl => wl.VacantProfileId)
+				.OnDelete(DeleteBehavior.Cascade);
 
 
-			//modelBuilder.Entity<WishListVacant>(entity =>
-			//{
-			//	entity.ToTable("WishListVacant");
+			modelBuilder.Entity<WishListVacant>()
+				.HasOne(wl => wl.Vacancy)
+				.WithMany(v => v.WishListVacant)
+				.HasForeignKey(wl => wl.VacancyId)
+				.OnDelete(DeleteBehavior.Cascade);
 
-			//	entity.HasIndex(e => e.VacantProfileId, "IX_WishListVacant_VacantProfileId").IsUnique();
 
-			//	entity.HasOne(d => d.VacantProfile).WithMany(p => p.WishListVacant).HasForeignKey(e => e.VacantProfileId);
-			//});
 
-			modelBuilder.Entity<Advertising>(entity =>
-			{
-				entity.ToTable("Advertising");
 
-				entity.HasIndex(e => e.VacancyId, "IX_Advertising_VacancyId").IsUnique();
-
-				entity.HasOne(d => d.Vacancy).WithOne(p => p.Advertising).HasForeignKey<Advertising>(d => d.VacancyId);
-			});
+			modelBuilder.Entity<Advertising>()
+				.Property(a => a.Price)
+				.HasColumnType("decimal(18, 2)"); // 18 basamak toplamda, 2 basamak ondalık kısmı
 
 
 			modelBuilder.Entity<VacantProfile>(entity =>
-			{
-				entity.HasIndex(e => e.AppUserId, "IX_VacantProfiles_AppUserId").IsUnique();
+				{
+					entity.HasIndex(e => e.AppUserId, "IX_VacantProfiles_AppUserId").IsUnique();
 
-				entity.HasOne(d => d.AppUser).WithOne(p => p.VacantProfile).HasForeignKey<VacantProfile>(d => d.AppUserId);
-			});
+					entity.HasOne(d => d.AppUser).WithOne(p => p.VacantProfile).HasForeignKey<VacantProfile>(d => d.AppUserId);
+				});
 
 			modelBuilder.Entity<Company>(entity =>
 			{
 				entity.HasIndex(e => e.AppUserId, "IX_Companys_AppUserId").IsUnique();
 
-				
+
 
 				entity.HasOne(d => d.AppUser).WithOne(p => p.Company).HasForeignKey<Company>(d => d.AppUserId);
 

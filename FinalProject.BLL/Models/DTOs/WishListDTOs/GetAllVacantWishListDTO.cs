@@ -10,5 +10,6 @@ namespace FinalProject.BLL.Models.DTOs.WishListDTOs
 	{
 		public int Id { get; set; }
 		public string VacantProfile {  get; set; }
+
 	}
 }

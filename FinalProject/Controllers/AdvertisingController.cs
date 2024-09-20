@@ -1,10 +1,11 @@
-﻿using FinalProject.BLL.Services.Interface;
+﻿using FinalProject.BLL.Models.DTOs.AdvertisingDTOs;
+using FinalProject.BLL.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AdvertisingController : ControllerBase
     {
@@ -16,10 +17,17 @@ namespace FinalProject.API.Controllers
 		}
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetVacancyPremium()
         {
             var result = await advertisingService.GetAllAdvertising();
-            return Ok(result);
-        } 
+            return StatusCode(result.StatusCode,result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAdvertising(CreateAdvertisingDTO createAdvertising)
+        {
+            var result = await advertisingService.CreateAdvertising(createAdvertising);
+            return StatusCode(result.StatusCode, result);
+        }
     }
 }

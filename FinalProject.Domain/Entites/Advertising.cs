@@ -9,11 +9,12 @@ namespace FinalProject.Domain.Entites
 {
 	public class Advertising : BaseEntity
 	{
-		public int Price {  get; set; }
+		public decimal Price {  get; set; }
+		public DateTime StartTime { get; set; }
 		public DateTime ExpireTime { get; set; } 
+		public bool IsPremium {  get; set; }
 
 
-	    //one to one
 		public Vacancy Vacancy { get; set; }
 		public int VacancyId { get; set;}
 	}

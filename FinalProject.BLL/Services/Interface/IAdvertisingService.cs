@@ -14,5 +14,6 @@ namespace FinalProject.BLL.Services.Interface
 		Task<GenericResponseApi<bool>> CreateAdvertising(CreateAdvertisingDTO createAdvertising);
 		Task<GenericResponseApi<bool>> UpdateAdvertising(UpdateAdvertisingDTO updateAdvertising);
 		Task<GenericResponseApi<bool>> RemoveAdvertising(int id);
+
 	}
 }
