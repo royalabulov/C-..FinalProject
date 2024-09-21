@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FinalProject.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class add : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,18 +65,6 @@ namespace FinalProject.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WishListVacancies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WishListVacancies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -270,9 +258,9 @@ namespace FinalProject.DAL.Migrations
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsPremium = table.Column<bool>(type: "bit", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    AdvertisingId = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -297,8 +285,10 @@ namespace FinalProject.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsPremium = table.Column<bool>(type: "bit", nullable: false),
                     VacancyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -313,60 +303,33 @@ namespace FinalProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "VacancyWishListVacancy",
+                name: "WishListVacant",
                 columns: table => new
                 {
-                    VacancyId = table.Column<int>(type: "int", nullable: false),
-                    WishListVacancyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VacancyWishListVacancy", x => new { x.VacancyId, x.WishListVacancyId });
-                    table.ForeignKey(
-                        name: "FK_VacancyWishListVacancy_Vacancy_VacancyId",
-                        column: x => x.VacancyId,
-                        principalTable: "Vacancy",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_VacancyWishListVacancy_WishListVacancies_WishListVacancyId",
-                        column: x => x.WishListVacancyId,
-                        principalTable: "WishListVacancies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WishListVacants",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     VacantProfileId = table.Column<int>(type: "int", nullable: false),
                     VacancyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WishListVacants", x => x.Id);
+                    table.PrimaryKey("PK_WishListVacant", x => new { x.VacancyId, x.VacantProfileId });
                     table.ForeignKey(
-                        name: "FK_WishListVacants_Vacancy_VacancyId",
+                        name: "FK_WishListVacant_Vacancy_VacancyId",
                         column: x => x.VacancyId,
                         principalTable: "Vacancy",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_WishListVacants_VacantProfiles_VacantProfileId",
+                        name: "FK_WishListVacant_VacantProfiles_VacantProfileId",
                         column: x => x.VacantProfileId,
                         principalTable: "VacantProfiles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Advertising_VacancyId",
                 table: "Advertising",
-                column: "VacancyId",
-                unique: true);
+                column: "VacancyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -429,24 +392,14 @@ namespace FinalProject.DAL.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VacancyWishListVacancy_WishListVacancyId",
-                table: "VacancyWishListVacancy",
-                column: "WishListVacancyId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VacantProfiles_AppUserId",
                 table: "VacantProfiles",
                 column: "AppUserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_WishListVacants_VacancyId",
-                table: "WishListVacants",
-                column: "VacancyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WishListVacants_VacantProfileId",
-                table: "WishListVacants",
+                name: "IX_WishListVacant_VacantProfileId",
+                table: "WishListVacant",
                 column: "VacantProfileId");
         }
 
@@ -475,16 +428,10 @@ namespace FinalProject.DAL.Migrations
                 name: "Subscriptions");
 
             migrationBuilder.DropTable(
-                name: "VacancyWishListVacancy");
-
-            migrationBuilder.DropTable(
-                name: "WishListVacants");
+                name: "WishListVacant");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "WishListVacancies");
 
             migrationBuilder.DropTable(
                 name: "Vacancy");

@@ -11,8 +11,8 @@ namespace FinalProject.Domain.Entites
 	{
 		public decimal Price {  get; set; }
 		public DateTime StartTime { get; set; }
-		public DateTime ExpireTime { get; set; } 
-		public bool IsPremium {  get; set; }
+		public DateTime ExpireTime { get; set; }
+		public bool IsPremium { get; set; } = false;
 
 
 		public Vacancy Vacancy { get; set; }

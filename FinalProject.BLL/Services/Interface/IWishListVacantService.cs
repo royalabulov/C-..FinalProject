@@ -6,8 +6,9 @@ namespace FinalProject.BLL.Services.Interface
 {
 	public interface IWishListVacantService
 	{
-		Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetVacantWishList();
+		Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetVacantWishList(int vacantProfileId);
 		Task<GenericResponseApi<bool>> AddVacantWishList(AddVacantWishListDTO addVacant);
 		Task<GenericResponseApi<bool>> RemoveVacantWishList(int Id);
+		Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacantWishList();
 	}
 }

@@ -12,12 +12,11 @@ namespace FinalProject.Domain.Entites
 		public string? HeaderName {  get; set; }
 		public int Price {  get; set; }
 		public string? SubscriptionLevel { get; set; }
-		public DateTime SubscriptionExpireTime { get; set; }
+		
 
 
 
-		public int CompanyId { get; set; }
-		public Company? Company { get; set; }
+		//public ICollection<>
 	
 	}
 }

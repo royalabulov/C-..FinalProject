@@ -24,10 +24,11 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Failure("Vacancy not found", 404);
 				return response;
 			}
-
-			vacancy.IsPremium = true;
-			vacancy.UpdateDate = DateTime.Now;
-			unitOfWork.GetRepository<Vacancy>().Update(vacancy);
+			//pula gore gunu hesabliyacam mes: 10 man gonderibse 5 e bolecem  2 gunluk reklam verecem startdate.addDays(2) gunu gelecem
+			//vacancylarin getallinda bunu nezere alacam 
+			//vacancy.IsPremium = true;
+			//vacancy.UpdateDate = DateTime.Now;
+			//unitOfWork.GetRepository<Vacancy>().Update(vacancy);
 
 			var mapping = mapper.Map<Advertising>(createAdvertising);
 
@@ -37,7 +38,7 @@ namespace FinalProject.BLL.Services.Implementation
 			await unitOfWork.Commit();
 
 			return response;
-
+			
 		}
 		
 

@@ -24,28 +24,48 @@ namespace FinalProject.BLL.Services.Implementation
 
 
 
-		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetVacantWishList()
+		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetVacantWishList(int vacantProfileId)
 		{
 			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
 
-			var vacant = await unitOfWork.GetRepository<VacantProfile>()
+			var wishList = await unitOfWork.GetRepository<WishListVacant>()
 				.GetAsQueryable()
-				.Include(wl => wl.WishListVacant)
-				.ThenInclude(v => v.Vacancy).ToListAsync();
+				.Include(v => v.Vacancy)
+				.Where(x => x.VacantProfileId == vacantProfileId).ToListAsync();
 
-			if (vacant == null)
+			if (wishList == null)
 			{
 				response.Failure("No vacant profiles found", 404);
 				return response;
 			}
 
-			var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacant.Select(x => x.WishListVacant).ToList().Distinct().ToList());
+			var mapping = mapper.Map<List<GetAllVacancyDTO>>(wishList.Select(x => x.Vacancy).ToList().Distinct().ToList());
 
 	        response.Success(mapping);
 			
 			return response;
 		}
 
+		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacantWishList()
+		{
+			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
+
+			var wishList = await unitOfWork.GetRepository<WishListVacant>()
+				.GetAsQueryable()
+				.Include(v => v.Vacancy).ToListAsync();
+
+			if (wishList == null)
+			{
+				response.Failure("No vacant profiles found", 404);
+				return response;
+			}
+
+			var mapping = mapper.Map<List<GetAllVacancyDTO>>(wishList.Select(x => x.Vacancy).ToList().Distinct().ToList());
+
+			response.Success(mapping);
+
+			return response;
+		}
 
 		public async Task<GenericResponseApi<bool>> AddVacantWishList(AddVacantWishListDTO addVacant)
 		{
@@ -66,8 +86,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 
 			var wishListProfile = mapper.Map<WishListVacant>(addVacant);
-			//wishListProfile.VacantProfileId = addVacant.VacantProfileId;
-			//wishListProfile.VacancyId = addVacant.VacancyId;
+		
 
 			await unitOfWork.GetRepository<WishListVacant>().AddAsync(wishListProfile);
 			

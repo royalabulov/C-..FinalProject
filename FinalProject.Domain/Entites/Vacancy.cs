@@ -31,9 +31,10 @@ namespace FinalProject.Domain.Entities
 	
 		public ICollection<Advertising> Advertising { get; set; }
 
-		public ICollection<WishListVacancy> WishListVacancy { get; set; }
+		//public ICollection<WishListVacancy> WishListVacancy { get; set; }
 		public ICollection<WishListVacant> WishListVacant { get; set; }
 
 	
     }
+
 }

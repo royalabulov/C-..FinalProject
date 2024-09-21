@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/[controller]/[action]")]
 	[ApiController]
 	public class WishListVacantController : ControllerBase
 	{
@@ -18,9 +18,16 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpGet]
+		public async Task<IActionResult> GetWishListVacant([FromQuery]int vacantProfileId)
+		{
+			var result = await wishListVacant.GetVacantWishList(vacantProfileId);
+			return StatusCode(result.StatusCode, result);
+		}
+
+		[HttpGet]
 		public async Task<IActionResult> GetAllWishListVacant()
 		{
-			var result = await wishListVacant.GetVacantWishList();
+			var result = await wishListVacant.GetAllVacantWishList();
 			return StatusCode(result.StatusCode, result);
 		}
 
