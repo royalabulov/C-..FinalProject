@@ -16,7 +16,6 @@ namespace FinalProject.Domain.Entities
 		public DateTime CreateDate { get; set; } = DateTime.Now;
 		public DateTime UpdateDate { get; set; } = DateTime.Now;
 		public DateTime ExpireDate { get; set; }
-		public bool IsPremium { get; set; } = false;
 
 
 		public int CompanyId {  get; set; }

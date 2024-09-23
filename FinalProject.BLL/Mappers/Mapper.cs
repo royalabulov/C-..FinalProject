@@ -7,6 +7,7 @@ using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
 using FinalProject.BLL.Models.DTOs.WishListDTOs;
+using FinalProject.BLL.Services.Implementation;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using System;
@@ -52,17 +53,25 @@ namespace FinalProject.BLL.Mappers
 				.ForMember(a => a.VacancyName, opt => opt.MapFrom(x => x.Vacancy.ToList()));
 
 			CreateMap<WishListVacant, GetAllVacancyDTO>()
-				.ForMember(a => a.Id, opt => opt.MapFrom(src => src.Vacancy.Id))
-				.ForMember(a => a.HeaderName, opt => opt.MapFrom(src => src.Vacancy.HeaderName))
-				.ForMember(a => a.Responsibilities, opt => opt.MapFrom(src => src.Vacancy.Responsibilities))
-				.ForMember(a => a.Requirements, opt => opt.MapFrom(src => src.Vacancy.Requirements));
+				.ForMember(ws => ws.Id, opt => opt.MapFrom(src => src.Vacancy.Id))
+				.ForMember(ws => ws.HeaderName, opt => opt.MapFrom(src => src.Vacancy.HeaderName))
+				.ForMember(ws => ws.Responsibilities, opt => opt.MapFrom(src => src.Vacancy.Responsibilities))
+				.ForMember(ws => ws.Requirements, opt => opt.MapFrom(src => src.Vacancy.Requirements));
 
-			CreateMap<WishListVacant, AddVacantWishListDTO>().ForMember(a => a.VacantProfileId, opt => opt.MapFrom(src => src.VacantProfileId))
-				.ForMember(a => a.VacancyId, opt => opt.MapFrom(src => src.VacancyId)).ReverseMap();
+			CreateMap<WishListVacant, AddVacantWishListDTO>().ForMember(ws => ws.VacantProfileId, opt => opt.MapFrom(src => src.VacantProfileId))
+				.ForMember(ws => ws.VacancyId, opt => opt.MapFrom(src => src.VacancyId)).ReverseMap();
 
 
 			CreateMap<CreateAdvertisingDTO, Advertising>()
-		       .ForMember(dest => dest.IsPremium, opt => opt.MapFrom(src => true));
+			   .ForMember(dest => dest.StartTime, opt => opt.Ignore())
+			   .ForMember(dest => dest.ExpireTime, opt => opt.Ignore()) 
+			   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
+
+
+			CreateMap<Advertising, GetAllAdvertisingDTO>()
+			   .ForMember(dest => dest.TimeLeft,
+			   opt => opt.MapFrom(src => AdvertisingService.CalculatorTimeLeft(src.ExpireTime, DateTime.Now)));
+
 
 		}
 	}

@@ -7,11 +7,15 @@ using FinalProject.Domain.Entities;
 using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Runtime.CompilerServices;
 
 namespace FinalProject.BLL.Services.Implementation
 {
-	public class AdvertisingService(IAdvertisingRepository advertisingRepository, IMapper mapper, IUnitOfWork unitOfWork) : IAdvertisingService
+	public class AdvertisingService(IMapper mapper, IUnitOfWork unitOfWork) : IAdvertisingService
 	{
+
 
 		public async Task<GenericResponseApi<bool>> CreateAdvertising(CreateAdvertisingDTO createAdvertising)
 		{
@@ -24,23 +28,34 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Failure("Vacancy not found", 404);
 				return response;
 			}
+
+			if (createAdvertising.Price % 5 != 0)
+			{
+				response.Failure("Invalid price amount", 400);
+				return response;
+			}
+
 			//pula gore gunu hesabliyacam mes: 10 man gonderibse 5 e bolecem  2 gunluk reklam verecem startdate.addDays(2) gunu gelecem
 			//vacancylarin getallinda bunu nezere alacam 
-			//vacancy.IsPremium = true;
-			//vacancy.UpdateDate = DateTime.Now;
-			//unitOfWork.GetRepository<Vacancy>().Update(vacancy);
+
+			var days = (int)(createAdvertising.Price / 5);
+			var startTime = DateTime.Now;
+			var expireTime = startTime.AddDays(days);
+
 
 			var mapping = mapper.Map<Advertising>(createAdvertising);
+			mapping.StartTime = startTime;
+			mapping.ExpireTime = expireTime;
+
 
 			await unitOfWork.GetRepository<Advertising>().AddAsync(mapping);
-			
+
 
 			await unitOfWork.Commit();
 
 			return response;
-			
+
 		}
-		
 
 
 
@@ -48,26 +63,38 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<List<GetAllAdvertisingDTO>>();
 
+			var currentTime = DateTime.Now;
+
 			var advertisements = await unitOfWork.GetRepository<Advertising>().GetAll();
 
-			foreach(var ads in advertisements)
+			var mapping = mapper.Map<List<GetAllAdvertisingDTO>>(advertisements);
+
+			foreach (var adTimeLeft in mapping)
 			{
-				if(DateTime.Now > ads.ExpireTime)
-				{
-					var vacancy = await unitOfWork.GetRepository<Vacancy>().GetById(ads.VacancyId);
-
-					vacancy.IsPremium = false;
-					vacancy.UpdateDate = DateTime.Now;
-				    unitOfWork.GetRepository<Vacancy>().Update(vacancy);
-
-					ads.IsPremium = false;
-				    unitOfWork.GetRepository<Advertising>().Update(ads);
-				}
+				adTimeLeft.TimeLeft = CalculatorTimeLeft(adTimeLeft.ExpireTime, currentTime);
 			}
-			await unitOfWork.Commit();
+
 
 			return response;
 		}
+
+
+		public static string CalculatorTimeLeft(DateTime expireTime, DateTime currentTime)
+		{
+			var timeSpan = expireTime - currentTime;
+
+			if (timeSpan.TotalDays < 0)
+				return "Expired";
+
+			if (timeSpan.TotalDays > 30)
+				return $"{Math.Floor(timeSpan.TotalDays / 30)} month(s) left";
+
+			if (timeSpan.TotalDays > 0 && timeSpan.TotalHours > 0)
+				return $"{timeSpan.TotalDays},{Math.Floor(timeSpan.TotalHours)} day(s) left";
+
+			return "Less than a day left";
+		}
+
 
 		public async Task<GenericResponseApi<bool>> RemoveAdvertising(int id)
 		{

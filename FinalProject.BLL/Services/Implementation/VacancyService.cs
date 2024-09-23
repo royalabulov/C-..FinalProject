@@ -3,8 +3,11 @@ using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.DAL.Context;
+using FinalProject.DAL.Repositories;
+using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace FinalProject.BLL.Services.Implementation
@@ -13,41 +16,117 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
-		private readonly AppDBContext context;
 
 
-		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork,AppDBContext context)
+		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
-			this.context = context;
+
 		}
-		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacancy()
+		#region butun vacancylari getirir
+
+		//public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacancy()
+		//{
+		//	var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
+
+		//	try
+		//	{
+
+		//		var vacancyEntity = await unitOfWork.GetRepository<Vacancy>().GetAll();
+
+
+
+		//		if (vacancyEntity == null)
+		//		{
+		//			response.Failure("Vacancy not found", 404);
+		//			return response;
+		//		}
+
+
+		//		var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacancyEntity);
+
+		//		response.Success(mapping);
+
+
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		response.Failure($"An error occurred while retrieving Vacancy: {ex.Message}");
+		//		Console.WriteLine(ex.Message);
+		//	}
+		//	return response;
+		//}
+
+		#endregion
+
+		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacanciesWithPremium()
 		{
 			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
 
-			try
+
+			var vacancies = await unitOfWork.GetRepository<Vacancy>().GetAsQueryable()
+				.Include(x => x.Company)
+				.OrderByDescending(v => v.CreateDate)
+				.ToListAsync();
+
+			var premiumVacancy = new List<Vacancy>();
+			var regularVacancy = new List<Vacancy>();
+
+
+			foreach (var vacancy in vacancies)
 			{
-
-				var vacancyEntity = await unitOfWork.GetRepository<Vacancy>().GetAll();
-
-				if (vacancyEntity == null)
+				if (await IsVacancyPremium(vacancy.Id))
 				{
-					response.Failure("Vacancy not found", 404);
-					return response;
+					premiumVacancy.Add(vacancy);
 				}
-
-				var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacancyEntity);
-				response.Success(mapping);
-
+				else
+				{
+					regularVacancy.Add(vacancy);
+				}
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while retrieving Vacancy: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
+
+			var result = premiumVacancy.Concat(regularVacancy).ToList();
+			var mapping = mapper.Map<List<GetAllVacancyDTO>>(result);
+
+			response.Data = mapping;
+
 			return response;
 		}
+
+		public async Task<bool> IsVacancyPremium(int Id)
+		{
+			var currentDate = DateTime.Now;
+
+			var activeAds = await unitOfWork.GetRepository<Advertising>()
+				.FirstOrDefaultAsync(x => x.VacancyId == Id && x.StartTime <= currentDate && x.ExpireTime >= currentDate);
+
+			return activeAds != null;
+		}
+
+		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetCompanyVacancy(int compnayId)
+		{
+			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
+
+			var vacancies = await unitOfWork.GetRepository<Vacancy>().GetAsQueryable()
+				.Where(x=>x.CompanyId == compnayId)
+				.OrderByDescending(o => o.CreateDate)
+				.ToListAsync();
+
+			if (!vacancies.Any())
+			{
+				response.Failure("Vacancy not found", 404);
+				return response;
+			}
+
+			var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacancies);
+			response.Success(mapping);
+
+			return response;
+		}
+
+
 
 		public async Task<GenericResponseApi<bool>> CreateVacancy(CreateVacancyDTO createVacancy)
 		{
@@ -61,23 +140,20 @@ namespace FinalProject.BLL.Services.Implementation
 					return response;
 				}
 
-				var category = await unitOfWork.GetRepository<Category>().FirstOrDefaultAsync(c=>c.HeaderName == createVacancy.CategoryName);
+				var category = await unitOfWork.GetRepository<Category>().FirstOrDefaultAsync(c => c.HeaderName == createVacancy.CategoryName);
 
 				if (category == null)
 				{
 					response.Failure("Category not found.", 404);
 					return response;
 				}
-				
+
 
 				var mapping = mapper.Map<Vacancy>(createVacancy);
 				mapping.CategoryId = category.Id;
 				mapping.CompanyId = createVacancy.CompanyId;
 				await unitOfWork.GetRepository<Vacancy>().AddAsync(mapping);
-				Console.WriteLine("Before commit...");
 				await unitOfWork.Commit();
-				Console.WriteLine("After commit - Commit was successful!");
-
 				response.Success(true);
 			}
 			catch (Exception ex)
@@ -139,5 +215,7 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
+
+
 	}
 }

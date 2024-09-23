@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class VacancyController : ControllerBase
     {
@@ -17,13 +17,20 @@ namespace FinalProject.API.Controllers
 		}
 
         [HttpGet]
-        public async Task<IActionResult> GetAllVacancy()
+        public async Task<IActionResult> GetAllVacancies()
         {
-            var result = await vacancyService.GetAllVacancy();
+            var result = await vacancyService.GetAllVacanciesWithPremium();
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPost]
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyVacancy(int compnayId)
+        {
+            var result = await vacancyService.GetCompanyVacancy(compnayId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+		[HttpPost]
         public async Task<IActionResult> CreateVacancy(CreateVacancyDTO createVacancy)
         {
             var result = await vacancyService.CreateVacancy(createVacancy);
