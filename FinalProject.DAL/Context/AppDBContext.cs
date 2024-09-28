@@ -17,34 +17,33 @@ namespace FinalProject.DAL.Context
 			modelBuilder.Entity<WishListVacant>().Ignore(s => s.Id);
 			modelBuilder.Entity<WishListVacant>().HasKey(sc => new { sc.VacancyId, sc.VacantProfileId });
 
-			//modelBuilder.Entity<WishListVacant>()
-			//	.HasOne<Vacancy>(sc => sc.Vacancy)
-			//	.WithMany(s => s.WishListVacant)
-			//	.HasForeignKey(sc => sc.VacancyId)
-			//	.OnDelete(DeleteBehavior.Cascade);
-
-			//modelBuilder.Entity<WishListVacant>()
-			//	.HasOne<VacantProfile>(sc => sc.VacantProfile)
-			//	.WithMany(s => s.WishListVacant)
-			//	.HasForeignKey(sc => sc.VacantProfileId)
-			//	.OnDelete(DeleteBehavior.Cascade);
-
-			//modelBuilder.Entity<WishListVacant>()
-			//	.HasOne(wl => wl.VacantProfile)
-			//	.WithMany(vp => vp.WishListVacant)
-			//	.HasForeignKey(wl => wl.VacantProfileId)
-			//	.OnDelete(DeleteBehavior.Cascade);
-
-
-			//modelBuilder.Entity<WishListVacant>()
-			//	.HasOne(wl => wl.Vacancy)
-			//	.WithMany(v => v.WishListVacant)
-			//	.HasForeignKey(wl => wl.VacancyId)
-			//	.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<Advertising>()
 				.Property(a => a.Price)
 				.HasColumnType("decimal(18, 2)");
+
+			modelBuilder.Entity<Advertising>()
+		   .HasOne(a => a.Company)
+		   .WithMany(c => c.Advertising)
+		   .HasForeignKey(a => a.CompanyId);
+
+			modelBuilder.Entity<Vacancy>()
+				.HasOne(v => v.Company)
+				.WithMany(c => c.Vacancies)
+				.HasForeignKey(v => v.CompanyId);
+
+			modelBuilder.Entity<Vacancy>()
+				.HasOne(v => v.Advertising)
+				.WithMany(a => a.Vacancy)
+				.HasForeignKey(v => v.AdvertisingId);
+
+
+			modelBuilder.Entity<Company>()
+				.HasMany(c => c.Advertising)
+				.WithOne(a => a.Company)
+				.HasForeignKey(a => a.CompanyId)
+				.OnDelete(DeleteBehavior.Restrict);
+
 
 
 			modelBuilder.Entity<VacantProfile>(entity =>

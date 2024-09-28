@@ -12,10 +12,11 @@ namespace FinalProject.Domain.Entites
 		public decimal Price {  get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime ExpireTime { get; set; }
-		public bool IsPremium { get; set; } = false;
+
+		public Company Company { get; set; }
+		public int CompanyId { get; set; }
 
 
-		public Vacancy Vacancy { get; set; }
-		public int VacancyId { get; set;}
+		public ICollection<Vacancy> Vacancy { get; set; }
 	}
 }

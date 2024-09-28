@@ -1,5 +1,7 @@
 ﻿using FinalProject.BLL.Models.DTOs.CategoryDTOs;
 using FinalProject.BLL.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +26,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> CreateCategory(CreateCategoryDTO createCategory)
 		{
@@ -31,6 +34,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpPut]
 		public async Task<IActionResult> UpdateCategory(UpdateCategoryDTO updateCategory)
 		{
@@ -38,6 +42,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpDelete]
 		public async Task<IActionResult> DeleteCategory(int id)
 		{

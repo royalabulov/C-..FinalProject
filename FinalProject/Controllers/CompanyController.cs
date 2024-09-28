@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace FinalProject.API.Controllers
 {
@@ -18,7 +19,7 @@ namespace FinalProject.API.Controllers
 			this.companyService = companyService;
 		}
 
-		//[Authorize(Roles = "Admin")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllCompany()
 		{
@@ -35,6 +36,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
 		[HttpPut]
 		public async Task<IActionResult> UpdateCompany(CompanyUpdateDTO companyUpdate)
 		{
@@ -42,6 +44,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpDelete]
 		public async Task<IActionResult> DeleteCompany(int id)
 		{

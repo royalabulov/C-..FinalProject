@@ -1,5 +1,7 @@
 ﻿using FinalProject.BLL.Models.DTOs.WishListDTOs;
 using FinalProject.BLL.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
@@ -17,6 +19,7 @@ namespace FinalProject.API.Controllers
 			this.wishListVacant = wishListVacant;
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
 		[HttpGet]
 		public async Task<IActionResult> GetWishListVacant([FromQuery]int vacantProfileId)
 		{
@@ -24,6 +27,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllWishListVacant()
 		{
@@ -31,10 +35,20 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
 		[HttpPost]
 		public async Task<IActionResult> AddVacantWishList(AddVacantWishListDTO addVacantWishListDTO)
 		{
 			var result = await wishListVacant.AddVacantWishList(addVacantWishListDTO);
+			return StatusCode(result.StatusCode, result);
+		}
+
+
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
+		[HttpDelete]
+		public async Task<IActionResult> RemoveWishList(int vacantProfileId, int loggedInUserId)
+		{
+			var result = await wishListVacant.RemoveVacantWishList(vacantProfileId, loggedInUserId);
 			return StatusCode(result.StatusCode, result);
 		}
 	}

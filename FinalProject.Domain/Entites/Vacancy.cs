@@ -27,10 +27,10 @@ namespace FinalProject.Domain.Entities
 		public Category? Category { get; set; }
 
 
-	
-		public ICollection<Advertising> Advertising { get; set; }
 
-		//public ICollection<WishListVacancy> WishListVacancy { get; set; }
+		public int? AdvertisingId { get; set; }
+		public Advertising? Advertising { get; set; }
+
 		public ICollection<WishListVacant> WishListVacant { get; set; }
 
 	

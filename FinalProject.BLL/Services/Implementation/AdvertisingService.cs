@@ -4,12 +4,8 @@ using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
-using FinalProject.Domain.Repositories;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Runtime.CompilerServices;
 
 namespace FinalProject.BLL.Services.Implementation
 {
@@ -21,11 +17,11 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			var vacancy = await unitOfWork.GetRepository<Vacancy>().FirstOrDefaultAsync(x => x.Id == createAdvertising.VacancyId);
+			var company = await unitOfWork.GetRepository<Company>().FirstOrDefaultAsync(x => x.Id == createAdvertising.CompanyId);
 
-			if (vacancy == null)
+			if (company == null)
 			{
-				response.Failure("Vacancy not found", 404);
+				response.Failure("Company not found", 404);
 				return response;
 			}
 
@@ -34,13 +30,26 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Failure("Invalid price amount", 400);
 				return response;
 			}
-
+			#region
 			//pula gore gunu hesabliyacam mes: 10 man gonderibse 5 e bolecem  2 gunluk reklam verecem startdate.addDays(2) gunu gelecem
 			//vacancylarin getallinda bunu nezere alacam 
+			#endregion
 
 			var days = (int)(createAdvertising.Price / 5);
 			var startTime = DateTime.Now;
 			var expireTime = startTime.AddDays(days);
+
+			var vacancy = await unitOfWork.GetRepository<Vacancy>()
+				.GetAsQueryable()
+				.Where(x => x.CompanyId == createAdvertising.CompanyId)
+				.ToListAsync();
+
+
+			foreach (var item in vacancy)
+			{
+				item.ExpireDate = expireTime;
+				item.CreateDate = startTime;
+			}
 
 
 			var mapping = mapper.Map<Advertising>(createAdvertising);
@@ -48,11 +57,12 @@ namespace FinalProject.BLL.Services.Implementation
 			mapping.ExpireTime = expireTime;
 
 
+
 			await unitOfWork.GetRepository<Advertising>().AddAsync(mapping);
 
 
 			await unitOfWork.Commit();
-
+			response.Success(true);
 			return response;
 
 		}
@@ -74,7 +84,7 @@ namespace FinalProject.BLL.Services.Implementation
 				adTimeLeft.TimeLeft = CalculatorTimeLeft(adTimeLeft.ExpireTime, currentTime);
 			}
 
-
+			response.Success(mapping);
 			return response;
 		}
 
@@ -94,6 +104,9 @@ namespace FinalProject.BLL.Services.Implementation
 
 			return "Less than a day left";
 		}
+
+
+
 
 
 		public async Task<GenericResponseApi<bool>> RemoveAdvertising(int id)

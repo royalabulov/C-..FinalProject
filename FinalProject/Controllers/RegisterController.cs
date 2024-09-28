@@ -1,5 +1,6 @@
 ﻿using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace FinalProject.API.Controllers
 			this.registerService = registerService;
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetAllRegisterUser()
 		{
@@ -25,6 +27,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetRolesToUserAsync(string Id)
 		{
@@ -32,7 +35,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-
+		
 		[HttpPost]
 		public async Task<IActionResult> CreateUser(UserCreateDTO userCreateDTO)
 		{
@@ -42,7 +45,7 @@ namespace FinalProject.API.Controllers
 
 
 
-		//[Authorize(Roles = "Admin")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> CreateCompany(CreateCompanyDTO companyCreateDTO)
 		{
@@ -50,7 +53,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpPost]
 		
 		public async Task<IActionResult> AssignRoleToUserAsync(string Id, string[] roles)

@@ -1,5 +1,7 @@
 ﻿using FinalProject.BLL.Models.DTOs.AppRoleDTOs;
 using FinalProject.BLL.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 namespace FinalProject.API.Controllers
 {
 	[Route("api/[controller]/[action]")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 	[ApiController]
 	public class RoleController : ControllerBase
 	{
@@ -16,6 +19,7 @@ namespace FinalProject.API.Controllers
         {
 			this.roleService = roleService;
 		}
+
 
 		[HttpGet]
 		public async Task<IActionResult> GetAllRole()

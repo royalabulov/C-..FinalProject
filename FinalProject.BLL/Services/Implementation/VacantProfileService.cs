@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 namespace FinalProject.BLL.Services.Implementation
 {
 	public class VacantProfileService : IVacantProfileService
-	{	
+	{
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
 		private readonly UserManager<AppUser> userManager;
 		private readonly IHttpContextAccessor httpContextAccessor;
 
-		public VacantProfileService(IMapper mapper,IUnitOfWork unitOfWork,UserManager<AppUser> userManager,IHttpContextAccessor httpContextAccessor)
+		public VacantProfileService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
@@ -37,22 +37,16 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<List<GetAllVacantDTO>>();
 
-			try
+
+			var vacantEntity = await unitOfWork.GetRepository<VacantProfile>().GetAll();
+			if (vacantEntity == null)
 			{
-				var vacantEntity = await unitOfWork.GetRepository<VacantProfile>().GetAll();
-				if (vacantEntity == null)
-				{
-					response.Failure("VacantProfile not found", 404);
-					return response;
-				}
-				var mapping = mapper.Map<List<GetAllVacantDTO>>(vacantEntity);
-				response.Success(mapping);
+				response.Failure("VacantProfile not found", 404);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while retrieving VacantProfile: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+			var mapping = mapper.Map<List<GetAllVacantDTO>>(vacantEntity);
+			response.Success(mapping);
+
 			return response;
 		}
 
@@ -60,35 +54,29 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+
+			if (createVacantProfile == null)
 			{
-                 
-				if (createVacantProfile == null)
-				{
-					response.Failure("VacantProfile data null", 404);
-					return response;
-				}
-				var mapping = mapper.Map<VacantProfile>(createVacantProfile);
-
-				var currentUser = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-				if (currentUser == null)
-				{
-					response.Failure("currentCompany not found", 404);
-					return response;
-				}
-
-				mapping.AppUserId = int.Parse(currentUser);
-
-				await unitOfWork.GetRepository<VacantProfile>().AddAsync(mapping);
-				await unitOfWork.Commit();
-				response.Success(true);
+				response.Failure("VacantProfile data null", 404);
+				return response;
 			}
-			catch (Exception ex)
+			var mapping = mapper.Map<VacantProfile>(createVacantProfile);
+
+			var currentUser = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (currentUser == null)
 			{
-				response.Failure($"An error occurred while create VacantProfile: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				response.Failure("currentCompany not found", 404);
+				return response;
 			}
+
+			mapping.AppUserId = int.Parse(currentUser);
+
+			await unitOfWork.GetRepository<VacantProfile>().AddAsync(mapping);
+			await unitOfWork.Commit();
+			response.Success(true);
+
+
 			return response;
 		}
 
@@ -98,22 +86,15 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var getById = await unitOfWork.GetRepository<VacantProfile>().GetById(id);
+			if (getById == null)
 			{
-				var getById = await unitOfWork.GetRepository<VacantProfile>().GetById(id);
-				if (getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				unitOfWork.GetRepository<VacantProfile>().Remove(getById);
-				await unitOfWork.Commit();
+				response.Failure("Id not found", 404);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while deleting the VacantProfile: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+			unitOfWork.GetRepository<VacantProfile>().Remove(getById);
+			await unitOfWork.Commit();
+
 			return response;
 		}
 
@@ -121,22 +102,15 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var getById = await unitOfWork.GetRepository<VacantProfile>().GetById(updateVacantProfile.Id);
+			if (getById == null)
 			{
-				var getById = await unitOfWork.GetRepository<VacantProfile>().GetById(updateVacantProfile.Id);
-				if(getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				unitOfWork.GetRepository<VacantProfile>().Update(getById);
-				await unitOfWork.Commit();
+				response.Failure("Id not found", 404);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while updating the Vacancy: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+			unitOfWork.GetRepository<VacantProfile>().Update(getById);
+			await unitOfWork.Commit();
+
 			return response;
 		}
 	}

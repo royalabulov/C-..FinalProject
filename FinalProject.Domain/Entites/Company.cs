@@ -19,8 +19,8 @@ namespace FinalProject.Domain.Entities
 		public ICollection<Vacancy> Vacancies { get; set; }
 
 
+		public ICollection<Advertising> Advertising { get; set; }
 
-	
 		public ICollection<Subscription> Subscriptions { get; set; }
 
 

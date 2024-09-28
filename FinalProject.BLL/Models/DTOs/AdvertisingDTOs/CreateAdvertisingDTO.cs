@@ -9,7 +9,7 @@ namespace FinalProject.BLL.Models.DTOs.AdvertisingDTOs
 	public class CreateAdvertisingDTO
 	{
 		public decimal Price { get; set; }
-		public int VacancyId { get; set; }
+		public int CompanyId { get; set; }
 	
 
 	}

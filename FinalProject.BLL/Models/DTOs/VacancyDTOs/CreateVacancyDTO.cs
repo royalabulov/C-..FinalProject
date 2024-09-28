@@ -15,6 +15,6 @@ namespace FinalProject.BLL.Models.DTOs.VacancyDTOs
 		public DateTime ExpireDate { get; set; }
 		public int CompanyId { get; set; }
 		public string CategoryName {  get; set; }
-
+		public int? AdvertisingId { get; set; }
 	}
 }

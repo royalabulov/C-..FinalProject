@@ -35,16 +35,16 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var user = signInManager.Context.User;
+			if (user?.Identity?.IsAuthenticated != true)
 			{
-				await signInManager.SignOutAsync();
-				response.Success(true, 204);
+				response.Failure("No active session found. User is not logged in.", 400);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while logging out: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
+			await signInManager.SignOutAsync();
+			response.Success(true);
+
 			return response;
 		}
 

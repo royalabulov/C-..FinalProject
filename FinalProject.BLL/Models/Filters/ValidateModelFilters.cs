@@ -22,12 +22,26 @@ namespace FinalProject.BLL.Models.Filters
 
 			if (!context.ModelState.IsValid)
 			{
-				//var messages = context.ModelState
-				//	.SelectMany(message => message.Value.Errors)
-				//	.Select(error => error.ErrorMessage)
-				//	.ToList();
 
-				//context.Result = new GenericResponseApi(messages);
+				if (!context.ModelState.IsValid)
+				{
+					var messages = context.ModelState
+						.SelectMany(message => message.Value.Errors)
+						.Select(error => error.ErrorMessage)
+						.ToList();
+
+					var response = new GenericResponseApi<List<string>>(messages)
+					{
+						IsSuccess = false,
+						StatusCode = 400
+					};
+
+					context.Result = new JsonResult(response)
+					{
+						StatusCode = 400
+					};
+
+				}
 			}
 		}
 	}

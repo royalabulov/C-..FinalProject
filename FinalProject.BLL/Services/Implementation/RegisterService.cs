@@ -3,10 +3,9 @@ using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using System.Transactions;
 
 
 namespace FinalProject.BLL.Services.Implementation
@@ -30,35 +29,38 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var existingUser = await userManager.FindByEmailAsync(userCreateDTO.Email);
+			if (existingUser != null)
+			{
+				response.Failure("User with this email already exists.", 400);
+				return response;
+			}
+
+			using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var mapping = mapper.Map<AppUser>(userCreateDTO);
-				var user = await userManager.FindByEmailAsync(userCreateDTO.Email);
 
-				if (user != null)
-				{
-					await userManager.AddToRoleAsync(user, "Vacant");
 
-				}
 				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
-
-				if (userEntity.Succeeded)
+				if (!userEntity.Succeeded)
 				{
-					response.Success(true);
-				}
-				else
-				{
-					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
+					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+					return response;
 				}
 
+				var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Vacant");
+				if (!addToRoleResult.Succeeded)
+				{
+					await userManager.DeleteAsync(mapping);
+					response.Failure("Failed to assign role. User creation has been rolled back.");
+					return response;
+				}
 
+				transaction.Complete();
 
+				response.Success(true);
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while creating the user: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
 			return response;
 		}
 
@@ -66,33 +68,39 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var existingUser = await userManager.FindByEmailAsync(createCompanyDTO.Email);
+			if (existingUser != null)
 			{
+				response.Failure("User with this email already exists.", 400);
+				return response;
+			}
 
+			using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
 				var mapping = mapper.Map<AppUser>(createCompanyDTO);
 
+
 				var userEntity = await userManager.CreateAsync(mapping, createCompanyDTO.Password);
-
-				if (userEntity.Succeeded)
+				if (!userEntity.Succeeded)
 				{
-					response.Success(true);
-				}
-				else
-				{
-					response.Failure(userEntity.Errors.Select(m => m.Description).ToList());
+					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+					return response;
 				}
 
-				var user = await userManager.FindByEmailAsync(createCompanyDTO.Email);
-				if (user != null)
-					await userManager.AddToRoleAsync(user, "Company");
 
+				var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Company");
+				if (!addToRoleResult.Succeeded)
+				{
+					await userManager.DeleteAsync(mapping);
+					response.Failure("Failed to assign role. User creation has been rolled back.");
+					return response;
+				}
 
+				transaction.Complete();
+
+				response.Success(true);
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while creating the user: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
 			return response;
 		}
 
@@ -100,24 +108,17 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<List<AllUserGetDTO>>();
 
-			try
+			var userEntity = await userManager.Users.ToListAsync();
+			if (userEntity == null)
 			{
-				var userEntity = await userManager.Users.ToListAsync();
-				if (userEntity == null)
-				{
-					response.Failure("User not found", 404);
-					return response;
-				}
-
-				var mapping = mapper.Map<List<AllUserGetDTO>>(userEntity);
-				response.Success(mapping);
-
+				response.Failure("User not found", 404);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while retrieving users: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
+			var mapping = mapper.Map<List<AllUserGetDTO>>(userEntity);
+			response.Success(mapping);
+
+
 			return response;
 		}
 
@@ -125,25 +126,17 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var getById = await userManager.FindByIdAsync(id.ToString());
+
+			if (getById == null)
 			{
-				var getById = await userManager.FindByIdAsync(id.ToString());
-
-				if (getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-
-				await userManager.DeleteAsync(getById);
-				response.Success(true);
-
+				response.Failure("Id not found", 404);
+				return response;
 			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while deleting the user: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
+
+			await userManager.DeleteAsync(getById);
+			response.Success(true);
+
 			return response;
 		}
 
@@ -151,28 +144,21 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+			var getById = await userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
+			if (getById == null)
 			{
-				var getById = await userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
-				if (getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-
-				var mapping = mapper.Map(userUpdateDTO, getById);
-
-				if (mapping == null)
-				{
-					response.Failure("faulty mapping", 400);
-				}
-				await userManager.UpdateAsync(mapping);
+				response.Failure("Id not found", 404);
+				return response;
 			}
-			catch (Exception ex)
+
+			var mapping = mapper.Map(userUpdateDTO, getById);
+
+			if (mapping == null)
 			{
-				response.Failure($"An error occurred while updating the user: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				response.Failure("faulty mapping", 400);
 			}
+			await userManager.UpdateAsync(mapping);
+
 			return response;
 		}
 

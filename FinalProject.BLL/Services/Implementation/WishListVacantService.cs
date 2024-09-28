@@ -98,9 +98,25 @@ namespace FinalProject.BLL.Services.Implementation
 
 		}
 
-		public Task<GenericResponseApi<bool>> RemoveVacantWishList(int Id)
+		public async Task<GenericResponseApi<bool>> RemoveVacantWishList(int vacantProfileId, int loggedInUserId)
 		{
-			throw new NotImplementedException();
+			var response = new GenericResponseApi<bool>();
+
+			var wishList = await unitOfWork.GetRepository<WishListVacant>()
+				.GetAsQueryable()
+				.Include(x => x.VacantProfile)
+				.FirstOrDefaultAsync(x => x.VacantProfileId == vacantProfileId && x.VacantProfile.AppUserId == loggedInUserId);
+
+			if (wishList == null)
+			{
+				response.Failure("No matching wish list found for the current user", 404);
+				return response;
+			}
+
+			unitOfWork.GetRepository<WishListVacant>().Remove(wishList);
+			await unitOfWork.Commit();
+			response.Success(true);
+			return response;
 		}
 	}
 }
