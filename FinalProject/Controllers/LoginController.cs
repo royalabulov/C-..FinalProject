@@ -33,8 +33,8 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpPost("refresh-token")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> LoginWithRefreshToken(string refreshToken)
 		{
 			var result = await loginService.LoginWithRefreshTokenAsync(refreshToken);

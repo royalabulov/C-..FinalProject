@@ -19,31 +19,31 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet]
+		[HttpGet("[action]")]
 		public async Task<IActionResult> GetAllCategory()
 		{
 			var result = await categoryService.GetAllCategories();
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[HttpPost("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpPost]
 		public async Task<IActionResult> CreateCategory(CreateCategoryDTO createCategory)
 		{
 			var result = await categoryService.CreateCategory(createCategory);
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[HttpPut("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpPut]
 		public async Task<IActionResult> UpdateCategory(UpdateCategoryDTO updateCategory)
 		{
 			var result = await categoryService.UpdateCategory(updateCategory);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpDelete("{id:int}")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteCategory(int id)
 		{
 			var result = await categoryService.DeleteCategory(id);

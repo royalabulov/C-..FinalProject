@@ -28,7 +28,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet]
+		[HttpGet("[action]")]
 		public async Task<IActionResult> GetAllWishListVacant()
 		{
 			var result = await wishListVacant.GetAllVacantWishList();
@@ -36,7 +36,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPost]
+		[HttpPost("[action]")]
 		public async Task<IActionResult> AddVacantWishList(AddVacantWishListDTO addVacantWishListDTO)
 		{
 			var result = await wishListVacant.AddVacantWishList(addVacantWishListDTO);

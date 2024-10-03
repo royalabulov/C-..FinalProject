@@ -17,7 +17,7 @@ namespace FinalProject.API.Controllers
 			this.vacancyService = vacancyService;
 		}
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetAllVacancies()
         {
             var result = await vacancyService.GetAllVacanciesWithPremium();
@@ -40,7 +40,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPost]
+		[HttpPost("[action]")]
         public async Task<IActionResult> CreateVacancy(CreateVacancyDTO createVacancy)
         {
             var result = await vacancyService.CreateVacancy(createVacancy);
@@ -48,7 +48,7 @@ namespace FinalProject.API.Controllers
         }
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPut]
+		[HttpPut("[action]")]
         public async Task<IActionResult> UpdateVacancy(UpdateVacancyDTO updateVacancy)
         {
             var result = await vacancyService.UpdateVacancy(updateVacancy);
@@ -56,7 +56,7 @@ namespace FinalProject.API.Controllers
         }
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpDelete("{id:int}")]
+		[HttpDelete("vacancies/{id:int}")]
         public async Task<IActionResult> DeleteVacancy(int id)
         {
             var result = await vacancyService.DeleteVacancy(id);
@@ -64,7 +64,7 @@ namespace FinalProject.API.Controllers
         }
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpDelete("{id:int}/{copmanyId:int}")]
+		[HttpDelete("companyvacancies/{id:int}/{copmanyId:int}")]
 		public async Task<IActionResult> DeleteOwnVacancy(int id, int copmanyId)
 		{
 			var result = await vacancyService.DeleteCompanyOwnedVacancy(id, copmanyId);

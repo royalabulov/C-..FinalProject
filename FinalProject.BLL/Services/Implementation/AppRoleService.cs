@@ -6,6 +6,8 @@ using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace FinalProject.BLL.Services.Implementation
@@ -14,36 +16,32 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly RoleManager<AppRole> roleManager;
 		private readonly IMapper mapper;
+		private readonly ILogger<AppRoleService> logger;
 
-
-		public AppRoleService(RoleManager<AppRole> roleManager, IMapper mapper)
+		public AppRoleService(RoleManager<AppRole> roleManager, IMapper mapper,ILogger<AppRoleService> logger)
 		{
 			this.roleManager = roleManager;
 			this.mapper = mapper;
-		
+			this.logger = logger;
 		}
 
 		public async Task<GenericResponseApi<List<AppRoleGetDTO>>> GetAllRoles()
 		{
 			var response = new GenericResponseApi<List<AppRoleGetDTO>>();
-			try
-			{
-				var roleEntity = await roleManager.Roles.ToListAsync();
 
-				if (roleEntity == null)
-				{
-					response.Failure("Role not found", 404);
-					return response;
-				}
+			var roleEntity = await roleManager.Roles.ToListAsync();
 
-				var mapping = mapper.Map<List<AppRoleGetDTO>>(roleEntity);
-				response.Success(mapping);
-			}
-			catch (Exception ex)
+			if (roleEntity == null)
 			{
-				response.Failure($"An error occurred while retrieving Role: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				response.Failure("Role not found", 404);
+				logger.LogWarning("Role not found.");
+				return response;
 			}
+
+			var mapping = mapper.Map<List<AppRoleGetDTO>>(roleEntity);
+			response.Success(mapping);
+
+			logger.LogInformation("Successfully retrieved all roles.");
 			return response;
 		}
 
@@ -51,25 +49,20 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
+
+			var roleEntity = await roleManager.CreateAsync(new AppRole { Name = roleName });
+
+			if (roleEntity.Succeeded)
 			{
-
-				var roleEntity = await roleManager.CreateAsync(new AppRole { Name = roleName });
-
-				if (roleEntity.Succeeded)
-				{
-					response.Success(true);
-				}
-				else
-				{
-					response.Failure(roleEntity.Errors.Select(m => m.Description).ToList(), 400);
-				}
-                 
+				response.Success(true);
+				logger.LogInformation($"Role '{roleName}' created successfully.");
 			}
-			catch (Exception ex)
+			else
 			{
-				response.Failure($"An error occurred while creating the Role: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				var errors = roleEntity.Errors.Select(m => m.Description).ToList();
+				response.Failure(errors, 400);
+				logger.LogWarning($"Failed to create role '{roleName}': {string.Join(", ", errors)}");
+
 			}
 			return response;
 		}
@@ -79,33 +72,29 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
-			{
-				var getRoleId = await roleManager.FindByIdAsync(id.ToString());
+			var getRoleId = await roleManager.FindByIdAsync(id.ToString());
 
-				if (getRoleId == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				IdentityResult result = await roleManager.DeleteAsync(getRoleId);
-				if (result.Succeeded)
-				{
-					response.Data = result.Succeeded;
-					response.StatusCode = 200;
-				}
-				else
-				{
-					response.Data = result.Succeeded;
-					response.StatusCode = 400;
-				}
-
-			}
-			catch (Exception ex)
+			if (getRoleId == null)
 			{
-				response.Failure($"An error occurred while deleting the Role: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				response.Failure("Id not found", 404);
+				logger.LogWarning($"Role with Id '{id}' not found.");
+				return response;
 			}
+			IdentityResult result = await roleManager.DeleteAsync(getRoleId);
+			if (result.Succeeded)
+			{
+				response.Success(true);
+				logger.LogInformation($"Role with Id '{id}' removed successfully.");
+				//response.Data = result.Succeeded;
+				//response.StatusCode = 200;
+			}
+			else
+			{
+				var errors = result.Errors.Select(e => e.Description).ToList();
+				response.Failure(errors, 400);
+				logger.LogWarning($"Failed to remove role with Id '{id}': {string.Join(", ", errors)}");
+			}
+
 			return response;
 		}
 
@@ -113,22 +102,18 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			try
-			{
-				var getRoleId = await roleManager.FindByIdAsync(roleUpdateDTO.Id.ToString());
+			var getRoleId = await roleManager.FindByIdAsync(roleUpdateDTO.Id.ToString());
 
-				if(getRoleId == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				var mapping = mapper.Map(roleUpdateDTO, getRoleId);
-				await roleManager.UpdateAsync(mapping);
-			}catch(Exception ex)
+			if (getRoleId == null)
 			{
-				response.Failure($"An error occurred while updating the Role: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				response.Failure("Id not found", 404);
+				logger.LogWarning($"Role with Id '{roleUpdateDTO.Id}' not found.");
+				return response;
 			}
+			var mapping = mapper.Map(roleUpdateDTO, getRoleId);
+			await roleManager.UpdateAsync(mapping);
+			logger.LogInformation($"Role with Id '{roleUpdateDTO.Id}' updated successfully.");
+
 			return response;
 		}
 	}

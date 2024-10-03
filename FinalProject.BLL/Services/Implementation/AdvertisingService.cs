@@ -6,10 +6,11 @@ using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FinalProject.BLL.Services.Implementation
 {
-	public class AdvertisingService(IMapper mapper, IUnitOfWork unitOfWork) : IAdvertisingService
+	public class AdvertisingService(IMapper mapper, IUnitOfWork unitOfWork,ILogger<AdvertisingService> logger) : IAdvertisingService
 	{
 
 
@@ -17,16 +18,20 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
+			logger.LogInformation("Creating advertising for company ID: {CompanyId}", createAdvertising.CompanyId);
+
 			var company = await unitOfWork.GetRepository<Company>().FirstOrDefaultAsync(x => x.Id == createAdvertising.CompanyId);
 
 			if (company == null)
 			{
+				logger.LogWarning("Company not found for ID: {CompanyId}", createAdvertising.CompanyId);
 				response.Failure("Company not found", 404);
 				return response;
 			}
 
 			if (createAdvertising.Price % 5 != 0)
 			{
+				logger.LogWarning("Invalid price amount: {Price}", createAdvertising.Price);
 				response.Failure("Invalid price amount", 400);
 				return response;
 			}
@@ -59,9 +64,9 @@ namespace FinalProject.BLL.Services.Implementation
 
 
 			await unitOfWork.GetRepository<Advertising>().AddAsync(mapping);
-
-
 			await unitOfWork.Commit();
+
+			logger.LogInformation("Advertising created successfully for company ID: {CompanyId}", createAdvertising.CompanyId);
 			response.Success(true);
 			return response;
 
@@ -72,6 +77,8 @@ namespace FinalProject.BLL.Services.Implementation
 		public async Task<GenericResponseApi<List<GetAllAdvertisingDTO>>> GetAllAdvertising()
 		{
 			var response = new GenericResponseApi<List<GetAllAdvertisingDTO>>();
+
+			logger.LogInformation("Fetching all advertisements");
 
 			var currentTime = DateTime.Now;
 
@@ -84,6 +91,7 @@ namespace FinalProject.BLL.Services.Implementation
 				adTimeLeft.TimeLeft = CalculatorTimeLeft(adTimeLeft.ExpireTime, currentTime);
 			}
 
+			logger.LogInformation("Fetched {Count} advertisements", mapping.Count);
 			response.Success(mapping);
 			return response;
 		}

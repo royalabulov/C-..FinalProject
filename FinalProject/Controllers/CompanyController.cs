@@ -19,8 +19,9 @@ namespace FinalProject.API.Controllers
 			this.companyService = companyService;
 		}
 
+
+		[HttpGet("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet]
 		public async Task<IActionResult> GetAllCompany()
 		{
 			var result = await companyService.GetAllCompany();
@@ -28,24 +29,24 @@ namespace FinalProject.API.Controllers
 		}
 
 
+		[HttpPost("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPost]
 		public async Task<IActionResult> CreateCompany(CompanyCreateDTO companyCreate)
 		{
 			var result = await companyService.CreateCompany(companyCreate);
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[HttpPut("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPut]
 		public async Task<IActionResult> UpdateCompany(CompanyUpdateDTO companyUpdate)
 		{
 			var result = await companyService.UpdateCompany(companyUpdate);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		[HttpDelete("{id}")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteCompany(int id)
 		{
 			var result = await companyService.DeleteCompany(id);

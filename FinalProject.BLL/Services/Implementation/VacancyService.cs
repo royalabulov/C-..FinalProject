@@ -6,6 +6,8 @@ using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.ComponentModel.Design;
 
 
 namespace FinalProject.BLL.Services.Implementation
@@ -14,60 +16,28 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
+		private readonly ILogger<VacancyService> logger;
 
-
-		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork)
+		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork,ILogger<VacancyService> logger)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
-
+			this.logger = logger;
 		}
-		#region butun vacancylari getirir
-
-		//public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacancy()
-		//{
-		//	var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
-
-		//	try
-		//	{
-
-		//		var vacancyEntity = await unitOfWork.GetRepository<Vacancy>().GetAll();
-
-
-
-		//		if (vacancyEntity == null)
-		//		{
-		//			response.Failure("Vacancy not found", 404);
-		//			return response;
-		//		}
-
-
-		//		var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacancyEntity);
-
-		//		response.Success(mapping);
-
-
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		response.Failure($"An error occurred while retrieving Vacancy: {ex.Message}");
-		//		Console.WriteLine(ex.Message);
-		//	}
-		//	return response;
-		//}
-
-		#endregion
 
 		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacanciesWithPremium()
 		{
 			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
 
+			logger.LogInformation("GetAllVacanciesWithPremium method started.");
 
 			var vacancies = await unitOfWork.GetRepository<Vacancy>()
 				.GetAsQueryable()
 				.Include(x => x.Company)
 				.OrderByDescending(v => v.CreateDate)
 				.ToListAsync();
+
+			logger.LogInformation($"Retrieved {vacancies.Count} vacancies from the database.");
 
 			var premiumVacancy = new List<Vacancy>();
 			var regularVacancy = new List<Vacancy>();
@@ -76,16 +46,21 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var vacancyIds = vacancies.Select(x => x.Id).ToList();
 
+			logger.LogInformation($"Current date: {currentDate}. Checking for active advertisements.");
+
 			var activeAds = await unitOfWork.GetRepository<Advertising>()
 				.GetAsQueryable()
 				.Where(ad => vacancies.Select(v => v.CompanyId).Contains(ad.CompanyId) && ad.StartTime <= currentDate && ad.ExpireTime >= currentDate)
 				.ToListAsync();
+
+			logger.LogInformation($"Retrieved {activeAds.Count} active advertisements.");
 
 			var activeAdsVacancyIds = vacancies
 				.Where(v => activeAds.Any(ad => ad.CompanyId == v.CompanyId))
 				.Select(v => v.Id)
 				.ToHashSet();
 
+			logger.LogInformation($"Found {activeAdsVacancyIds.Count} vacancies with active advertisements.");
 
 			foreach (var vacancy in vacancies)
 			{
@@ -99,6 +74,7 @@ namespace FinalProject.BLL.Services.Implementation
 				}
 			}
 
+			logger.LogInformation($"Total premium vacancies: {premiumVacancy.Count}. Total regular vacancies: {regularVacancy.Count}.");
 
 			var result = premiumVacancy.Concat(regularVacancy).ToList();
 
@@ -106,22 +82,28 @@ namespace FinalProject.BLL.Services.Implementation
 
 			response.Success(mapping);
 
+			logger.LogInformation("Successfully completed GetAllVacanciesWithPremium method.");
 			return response;
 		}
 
 	
 
-		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetCompanyVacancy(int compnayId)
+		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetCompanyVacancy(int companyId)
 		{
 			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
 
+			logger.LogInformation($"GetCompanyVacancy method started for companyId: {companyId}.");
+
 			var vacancies = await unitOfWork.GetRepository<Vacancy>().GetAsQueryable()
-				.Where(x => x.CompanyId == compnayId)
+				.Where(x => x.CompanyId == companyId)
 				.OrderByDescending(o => o.CreateDate)
 				.ToListAsync();
 
+			logger.LogInformation($"Retrieved {vacancies.Count} vacancies for companyId: {companyId}.");
+
 			if (!vacancies.Any())
 			{
+				logger.LogWarning($"No vacancies found for companyId: {companyId}.");
 				response.Failure("Vacancy not found", 404);
 				return response;
 			}
@@ -129,6 +111,7 @@ namespace FinalProject.BLL.Services.Implementation
 			var mapping = mapper.Map<List<GetAllVacancyDTO>>(vacancies);
 			response.Success(mapping);
 
+			logger.LogInformation($"Successfully retrieved vacancies for companyId: {companyId}.");
 			return response;
 		}
 
@@ -137,13 +120,18 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
 
+			logger.LogInformation($"GetCategoryVacancy method started for categoryId: {categoryId}.");
+
 			var categoryVacancy = await unitOfWork.GetRepository<Vacancy>()
 				.GetAsQueryable()
 				.Where(x => x.CategoryId == categoryId).Include(x => x.Company)
 				.ToListAsync();
 
+			logger.LogInformation($"Retrieved {categoryVacancy.Count} vacancies for categoryId: {categoryId}.");
+
 			if (!categoryVacancy.Any())
 			{
+				logger.LogWarning($"No vacancies found for categoryId: {categoryId}.");
 				response.Failure("No vacancies found for this category", 404);
 				return response;
 			}
@@ -157,6 +145,7 @@ namespace FinalProject.BLL.Services.Implementation
 			var mapping = mapper.Map<List<GetAllVacancyDTO>>(result);
 			response.Success(mapping);
 
+			logger.LogInformation($"Successfully retrieved vacancies for categoryId: {categoryId}. Total vacancies: {result.Count}.");
 			return response;
 		}
 
@@ -168,8 +157,11 @@ namespace FinalProject.BLL.Services.Implementation
 
 			try
 			{
+				logger.LogInformation("CreateVacancy method started.");
+
 				if (createVacancy == null)
 				{
+					logger.LogWarning("Vacancy data is null.");
 					response.Failure("Vacancy data null", 404);
 					return response;
 				}
@@ -179,6 +171,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 				if (category == null)
 				{
+					logger.LogWarning($"Category '{createVacancy.CategoryName}' not found.");
 					response.Failure("Category not found.", 404);
 					return response;
 				}
@@ -198,6 +191,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 						if (!advertisingExists)
 						{
+							logger.LogWarning($"The specified AdvertisingId {createVacancy.AdvertisingId.Value} does not exist.");
 							response.Failure("The specified AdvertisingId does not exist.", 404);
 							return response;
 						}
@@ -225,30 +219,30 @@ namespace FinalProject.BLL.Services.Implementation
 
 					if (mapping.ExpireDate <= premiumExpireDate)
 					{
-
+						logger.LogInformation("Setting vacancy expiration date to premium expiration date.");
 					}
 					else
 					{
 						var remainingNormalDuration = (mapping.ExpireDate - premiumExpireDate).TotalDays;
 						mapping.ExpireDate = premiumExpireDate.AddDays(remainingNormalDuration);
+						logger.LogInformation($"Setting vacancy expiration date to {mapping.ExpireDate} after adjusting for premium duration.");
 					}
 				}
 				else
 				{
 					mapping.ExpireDate = createVacancy.ExpireDate;
+					logger.LogInformation("Setting vacancy expiration date to the provided ExpireDate.");
 				}
-
-
-
 
 				await unitOfWork.GetRepository<Vacancy>().AddAsync(mapping);
 				await unitOfWork.Commit();
+				logger.LogInformation("Vacancy created successfully.");
 				response.Success(true);
 			}
 			catch (Exception ex)
 			{
+				logger.LogError($"An error occurred while saving the entity changes: {ex.Message}");
 				response.Failure($"An error occurred while saving the entity changes: {ex.Message}");
-				Console.WriteLine(ex.InnerException?.Message);
 			}
 
 			return response;
@@ -261,16 +255,21 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
+			logger.LogInformation($"DeleteVacancy method started for Id: {Id}");
+
 			var getById = await unitOfWork.GetRepository<Vacancy>().GetById(Id);
 
 			if (getById == null)
 			{
+				logger.LogInformation($"DeleteVacancy method started for Id: {Id}");
 				response.Failure("Id not found", 404);
 				return response;
 			}
 			unitOfWork.GetRepository<Vacancy>().Remove(getById);
 			await unitOfWork.Commit();
+			logger.LogInformation($"Vacancy with Id {Id} deleted successfully.");
 
+			response.Success(true);
 			return response;
 		}
 
@@ -279,12 +278,15 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
+			logger.LogInformation($"UpdateVacancy method started for Vacancy Id: {updateVacancy.Id} and Company Id: {updateVacancy.companyId}");
+
 			var updateOwnVacancy = await unitOfWork.GetRepository<Vacancy>()
 				.GetAsQueryable()
 				.FirstOrDefaultAsync(x => x.CompanyId == updateVacancy.companyId && x.Id == updateVacancy.Id);
 
 			if (updateOwnVacancy == null)
 			{
+				logger.LogInformation($"UpdateVacancy method started for Vacancy Id: {updateVacancy.Id} and Company Id: {updateVacancy.companyId}");
 				response.Failure("Vacancy not found or you do not have permission to update this vacancy", 404);
 				return response;
 			}
@@ -295,6 +297,8 @@ namespace FinalProject.BLL.Services.Implementation
 			unitOfWork.GetRepository<Vacancy>().Update(mapping);
 			await unitOfWork.Commit();
 
+			logger.LogInformation($"Vacancy with Id {updateVacancy.Id} updated successfully for Company Id: {updateVacancy.companyId}");
+			response.Success(true);
 			return response;
 		}
 
@@ -302,20 +306,23 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
+			logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {Id} and Company Id: {companyId}");
+
 			var deleteOwnVacancy = await unitOfWork.GetRepository<Vacancy>()
 				.FirstOrDefaultAsync(v => v.Id == Id && v.CompanyId == companyId);
 
 			if (deleteOwnVacancy == null)
 			{
+				logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {Id} and Company Id: {companyId}");
 				response.Failure("Id not found or you do not have permission to delete this vacancy", 404);
 				return response;
 			}
 
 			unitOfWork.GetRepository<Vacancy>().Remove(deleteOwnVacancy);
 			await unitOfWork.Commit();
+
+			logger.LogInformation($"Vacancy with Id {Id} deleted successfully for Company Id: {companyId}");
 			response.Success(true);
-
-
 			return response;
 		}
 	}

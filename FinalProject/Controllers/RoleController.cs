@@ -19,28 +19,32 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet("roles")]
+		[HttpGet]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> GetAllRole()
 		{
 			var result = await roleService.GetAllRoles();
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost("roles")]
+		[HttpPost]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> CreateRole(string roleName)
 		{
 			var result = await roleService.CreateRole(roleName);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPut("roles")]
+		[HttpPut]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> UpdateRole(AppRoleUpdateDTO role)
 		{
 			var result = await roleService.UpdateRole(role);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpDelete("roles/{id}")]
+		[HttpDelete("{id}")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteRole(int id)
 		{
 			var result = await roleService.RemoveRole(id);

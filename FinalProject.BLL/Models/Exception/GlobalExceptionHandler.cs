@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FinalProject.BLL.Models.Exception
 {
 	public class GlobalExceptionHandler : IExceptionFilter
 	{
-		public void OnException(ExceptionContext context)
+		private readonly ILogger<GlobalExceptionHandler> logger;
+
+		public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+			this.logger = logger;
+		}
+        public void OnException(ExceptionContext context)
 		{
 
 			var statusCode = context.Exception switch
@@ -26,14 +28,28 @@ namespace FinalProject.BLL.Models.Exception
 				_ => StatusCodes.Status500InternalServerError
 			};
 
-			context.Result = new ObjectResult(new
+			var result = new
 			{
-				error = context.Exception.Message,	
-				stackTrace = context.Exception.StackTrace
-			})
+				error = statusCode == StatusCodes.Status500InternalServerError
+				? "An unexpected error occurred. Please try again later."
+				: context.Exception.Message, 
+				stackTrace = statusCode == StatusCodes.Status500InternalServerError ? null : context.Exception.StackTrace 
+			};
+
+			if(statusCode == StatusCodes.Status500InternalServerError)
+			{
+				logger.LogError(context.Exception,"An unexpected error occurred: {ErrorMessage}", context.Exception.Message);
+			}
+			else
+			{
+				logger.LogWarning("Handled exception: {ErrorMessage}", context.Exception.Message);
+			}
+
+			context.Result = new ObjectResult(result)
 			{
 				StatusCode = statusCode
 			};
+			context.ExceptionHandled = true;
 		}
 	}
 }

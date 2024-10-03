@@ -26,8 +26,8 @@ namespace FinalProject.API.Controllers
             return StatusCode(result.StatusCode,result);
         }
 
+		[HttpPost("[action]")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Company")]
-		[HttpPost]
         public async Task<IActionResult> CreateAdvertising(CreateAdvertisingDTO createAdvertising)
         {
             var result = await advertisingService.CreateAdvertising(createAdvertising);

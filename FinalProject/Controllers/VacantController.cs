@@ -20,7 +20,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet]
+		[HttpGet("[action]")]
 		public async Task<IActionResult> GetAll()
 		{
 			var result = await vacantProfileService.AllVacant();
@@ -30,7 +30,7 @@ namespace FinalProject.API.Controllers
 
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPost]
+		[HttpPost("[action]")]
 		public async Task<IActionResult> Create(CreateVacantProfileDTO createVacantProfile)
 		{
 			var result = await vacantProfileService.CreateVacantProfile(createVacantProfile);
@@ -38,7 +38,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPut]
+		[HttpPut("[action]")]
 		public async Task<IActionResult> UpdateVacant(UpdateVacantProfileDTO updateVacantProfile)
 		{
 			var result = await vacantProfileService.UpdateVacantProfile(updateVacantProfile);

@@ -6,6 +6,7 @@ using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.Xml;
 using System.Text;
@@ -19,17 +20,16 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly ITokenService tokenService;
 		private readonly IRegisterService registerService;
 		private readonly UserManager<AppUser> userManager;
+		private readonly ILogger<LoginService> logger;
 
-		public LoginService(SignInManager<AppUser> signInManager, ITokenService tokenService, IRegisterService registerService, UserManager<AppUser> userManager)
+		public LoginService(SignInManager<AppUser> signInManager, ITokenService tokenService, IRegisterService registerService, UserManager<AppUser> userManager,ILogger<LoginService> logger)
 		{
 			this.signInManager = signInManager;
 			this.tokenService = tokenService;
 			this.registerService = registerService;
 			this.userManager = userManager;
+			this.logger = logger;
 		}
-
-
-
 
 		public async Task<GenericResponseApi<bool>> Logout()
 		{
@@ -39,12 +39,14 @@ namespace FinalProject.BLL.Services.Implementation
 			if (user?.Identity?.IsAuthenticated != true)
 			{
 				response.Failure("No active session found. User is not logged in.", 400);
+				logger.LogWarning("Logout attempted with no active session.");
 				return response;
 			}
 
 			await signInManager.SignOutAsync();
 			response.Success(true);
 
+			logger.LogInformation("User logged out successfully.");
 			return response;
 		}
 
@@ -61,12 +63,15 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					GenerateTokenResponse token = await tokenService.GenerateToken(user);
 					await registerService.UpdateRefreshToken(token.RefreshToken, user, token.ExpireDate.AddMinutes(15));
+
+					response.Success(token);
+					logger.LogInformation("Successfully logged in using refresh token.");
 				}
 			}
 			catch (Exception ex)
 			{
-
-				Console.WriteLine(ex.Message);
+				response.Failure($"Error during login with refresh token: {ex.Message}");
+				logger.LogError(ex, "Error occurred during login with refresh token.");
 			}
 			return response;
 
@@ -74,25 +79,28 @@ namespace FinalProject.BLL.Services.Implementation
 
 		public async Task<GenericResponseApi<GenerateTokenResponse>> Login(LoginCreateDTO login)
 		{
+			var response = new GenericResponseApi<GenerateTokenResponse>();
 			var user = await userManager.FindByNameAsync(login.Email);
 
 			SignInResult result = await signInManager.CheckPasswordSignInAsync(user, login.Password, false);
 
 			if (result.Succeeded)
 			{
-				GenerateTokenResponse response = await tokenService.GenerateToken(user);
+				GenerateTokenResponse tokenResponse = await tokenService.GenerateToken(user);
 
-				await registerService.UpdateRefreshToken(response.RefreshToken, user, response.ExpireDate.AddMinutes(15));
+				await registerService.UpdateRefreshToken(tokenResponse.RefreshToken, user, tokenResponse.ExpireDate.AddMinutes(15));
 
-				return new() { Data = response, StatusCode = 200 };
+				response.Success(tokenResponse);
+				logger.LogInformation("User logged in successfully.");
+				return response;
 			}
 			else
 			{
-				return new() { Data = null, StatusCode = 500 };
+				response.Failure("Invalid login attempt.", 401);
+				logger.LogWarning("Failed login attempt for user: {Email}", login.Email); // Uyarı logu
+				return response;
 			}
-
-
-		} //buna bax
+		} 
 
 
 		public async Task<GenericResponseApi<bool>> PasswordReset(PasswordResetDTO passwordReset)
@@ -109,14 +117,19 @@ namespace FinalProject.BLL.Services.Implementation
 
 					if (data != null)
 					{
+						logger.LogInformation("Password changed successfully for user: {Email}", passwordReset.Email);
 						return response;
 					}
+				}
+				else
+				{
+					logger.LogWarning("Password reset attempt for non-existing user: {Email}", passwordReset.Email);
 				}
 			}
 			catch (Exception ex)
 			{
 				response.Failure($"Password not renewed: {ex.Message}");
-				Console.WriteLine(ex.Message);
+				logger.LogError(ex, "Error occurred during password reset for user: {Email}", passwordReset.Email);
 			}
 			return response;
 		}

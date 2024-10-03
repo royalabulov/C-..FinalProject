@@ -5,6 +5,7 @@ using FinalProject.BLL.Services.Interface;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Transactions;
 
 
@@ -14,13 +15,13 @@ namespace FinalProject.BLL.Services.Implementation
 	{
 		private readonly UserManager<AppUser> userManager;
 		private readonly IMapper mapper;
+		private readonly ILogger<RegisterService> logger;
 
-
-		public RegisterService(UserManager<AppUser> userManager, IMapper mapper)
+		public RegisterService(UserManager<AppUser> userManager, IMapper mapper,ILogger<RegisterService> logger)
 		{
 			this.userManager = userManager;
 			this.mapper = mapper;
-
+			this.logger = logger;
 		}
 
 
@@ -33,6 +34,7 @@ namespace FinalProject.BLL.Services.Implementation
 			if (existingUser != null)
 			{
 				response.Failure("User with this email already exists.", 400);
+				logger.LogWarning("Attempt to create vacant user failed: Email already exists - {Email}", userCreateDTO.Email);
 				return response;
 			}
 
@@ -45,6 +47,7 @@ namespace FinalProject.BLL.Services.Implementation
 				if (!userEntity.Succeeded)
 				{
 					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+					logger.LogError("Failed to create vacant user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
 					return response;
 				}
 
@@ -53,12 +56,14 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					await userManager.DeleteAsync(mapping);
 					response.Failure("Failed to assign role. User creation has been rolled back.");
+					logger.LogError("Failed to assign role to vacant user: {Email}", userCreateDTO.Email);
 					return response;
 				}
 
 				transaction.Complete();
 
 				response.Success(true);
+				logger.LogInformation("Vacant user created successfully: {Email}", userCreateDTO.Email);
 			}
 
 			return response;
@@ -72,6 +77,7 @@ namespace FinalProject.BLL.Services.Implementation
 			if (existingUser != null)
 			{
 				response.Failure("User with this email already exists.", 400);
+				logger.LogWarning("Attempt to create company user failed: Email already exists - {Email}", createCompanyDTO.Email);
 				return response;
 			}
 
@@ -84,6 +90,7 @@ namespace FinalProject.BLL.Services.Implementation
 				if (!userEntity.Succeeded)
 				{
 					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+					logger.LogError("Failed to create company user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
 					return response;
 				}
 
@@ -93,12 +100,14 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 					await userManager.DeleteAsync(mapping);
 					response.Failure("Failed to assign role. User creation has been rolled back.");
+					logger.LogError("Failed to assign role to company user: {Email}", createCompanyDTO.Email);
 					return response;
 				}
 
 				transaction.Complete();
 
 				response.Success(true);
+				logger.LogInformation("Company user created successfully: {Email}", createCompanyDTO.Email);
 			}
 
 			return response;
@@ -112,12 +121,13 @@ namespace FinalProject.BLL.Services.Implementation
 			if (userEntity == null)
 			{
 				response.Failure("User not found", 404);
+				logger.LogWarning("Attempt to retrieve users failed: No users found.");
 				return response;
 			}
 
 			var mapping = mapper.Map<List<AllUserGetDTO>>(userEntity);
 			response.Success(mapping);
-
+			logger.LogInformation("Retrieved all users successfully.");
 
 			return response;
 		}
@@ -131,12 +141,13 @@ namespace FinalProject.BLL.Services.Implementation
 			if (getById == null)
 			{
 				response.Failure("Id not found", 404);
+				logger.LogWarning("Attempt to remove user failed: Id not found - {Id}", id);
 				return response;
 			}
 
 			await userManager.DeleteAsync(getById);
 			response.Success(true);
-
+			logger.LogInformation("User removed successfully: {Id}", id);
 			return response;
 		}
 
@@ -148,6 +159,7 @@ namespace FinalProject.BLL.Services.Implementation
 			if (getById == null)
 			{
 				response.Failure("Id not found", 404);
+				logger.LogWarning("Attempt to update user failed: Id not found - {Id}", userUpdateDTO.Id);
 				return response;
 			}
 
@@ -156,9 +168,12 @@ namespace FinalProject.BLL.Services.Implementation
 			if (mapping == null)
 			{
 				response.Failure("faulty mapping", 400);
+				logger.LogWarning("User update failed due to faulty mapping for Id: {Id}", userUpdateDTO.Id);
+				return response;
 			}
 			await userManager.UpdateAsync(mapping);
-
+			response.Success(true);
+			logger.LogInformation("User updated successfully: {Id}", userUpdateDTO.Id);
 			return response;
 		}
 
@@ -170,6 +185,7 @@ namespace FinalProject.BLL.Services.Implementation
 				user.RefreshToken = refreshToken;
 				user.ExpireTimeRFT = accessTokenData.AddMinutes(15);
 				await userManager.UpdateAsync(user);
+				logger.LogInformation("Refresh token updated for user: {UserId}", user.Id);				
 			}
 		}
 
@@ -190,6 +206,7 @@ namespace FinalProject.BLL.Services.Implementation
 					response.Data = true;
 					response.IsSuccess = true;
 					response.StatusCode = 200;
+					logger.LogInformation("Roles assigned successfully to user: {UserId}", Id);
 				}
 			}
 			catch (Exception ex)
@@ -197,7 +214,7 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Data = false;
 				response.StatusCode = 500;
 				await Console.Out.WriteLineAsync(ex.Message);
-
+				logger.LogError(ex, "Error occurred while assigning roles to user: {UserId}", Id);
 			}
 			return response;
 		}
@@ -216,6 +233,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 					response.StatusCode = 200;
 					response.Data = userRoles.ToArray();
+					logger.LogInformation("Retrieved roles for user: {UserId}", userIdOrName);
 				}
 
 			}
@@ -223,7 +241,7 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				response.Data = null;
 				response.StatusCode = 500;
-				await Console.Out.WriteLineAsync(ex.Message);
+				logger.LogError(ex, "Error occurred while retrieving roles for user: {UserId}", userIdOrName);
 			}
 			return response;
 		}
