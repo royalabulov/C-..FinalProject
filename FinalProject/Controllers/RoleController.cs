@@ -2,13 +2,11 @@
 using FinalProject.BLL.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 	[ApiController]
 	public class RoleController : ControllerBase
@@ -21,28 +19,28 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet]
+		[HttpGet("roles")]
 		public async Task<IActionResult> GetAllRole()
 		{
 			var result = await roleService.GetAllRoles();
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost]
+		[HttpPost("roles")]
 		public async Task<IActionResult> CreateRole(string roleName)
 		{
 			var result = await roleService.CreateRole(roleName);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPut]
+		[HttpPut("roles")]
 		public async Task<IActionResult> UpdateRole(AppRoleUpdateDTO role)
 		{
 			var result = await roleService.UpdateRole(role);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpDelete]
+		[HttpDelete("roles/{id}")]
 		public async Task<IActionResult> DeleteRole(int id)
 		{
 			var result = await roleService.RemoveRole(id);

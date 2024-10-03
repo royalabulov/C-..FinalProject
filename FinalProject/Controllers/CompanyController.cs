@@ -8,7 +8,7 @@ using System.Data;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class CompanyController : ControllerBase
 	{
@@ -45,7 +45,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpDelete]
+		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteCompany(int id)
 		{
 			var result = await companyService.DeleteCompany(id);

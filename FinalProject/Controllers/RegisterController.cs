@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class RegisterController : ControllerBase
 	{
@@ -20,7 +20,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet]
+		[HttpGet("allusers")]
 		public async Task<IActionResult> GetAllRegisterUser()
 		{
 			var result = await registerService.GelAllUser();
@@ -28,7 +28,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet]
+		[HttpGet("users/{id}/roles")]
 		public async Task<IActionResult> GetRolesToUserAsync(string Id)
 		{
 			var result = await registerService.GetRolesToUserAsync(Id);
@@ -36,7 +36,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		
-		[HttpPost]
+		[HttpPost("vacant")]
 		public async Task<IActionResult> CreateUser(UserCreateDTO userCreateDTO)
 		{
 			var result = await registerService.CreateVacant(userCreateDTO);
@@ -46,7 +46,7 @@ namespace FinalProject.API.Controllers
 
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpPost]
+		[HttpPost("companies")]
 		public async Task<IActionResult> CreateCompany(CreateCompanyDTO companyCreateDTO)
 		{
 			var result = await registerService.CreateCompany(companyCreateDTO);
@@ -54,8 +54,8 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpPost]
-		
+		[HttpPost("users/{id}/roles")]
+
 		public async Task<IActionResult> AssignRoleToUserAsync(string Id, string[] roles)
 		{
 			var result = await	registerService.AssignRoleToUserAsync($"{Id}", roles);

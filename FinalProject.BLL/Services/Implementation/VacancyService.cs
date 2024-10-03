@@ -2,8 +2,6 @@
 using FinalProject.BLL.Models.DTOs.VacancyDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
-using FinalProject.DAL.Context;
-using FinalProject.DAL.Repositories;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
 using FinalProject.Domain.UnitOfWorkInterface;
@@ -161,6 +159,8 @@ namespace FinalProject.BLL.Services.Implementation
 
 			return response;
 		}
+
+
 
 		public async Task<GenericResponseApi<bool>> CreateVacancy(CreateVacancyDTO createVacancy)
 		{

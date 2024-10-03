@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class WishListVacantController : ControllerBase
 	{
@@ -20,8 +20,8 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpGet]
-		public async Task<IActionResult> GetWishListVacant([FromQuery]int vacantProfileId)
+		[HttpGet("wishlist/{vacantProfileId}")]
+		public async Task<IActionResult> GetWishListVacant(int vacantProfileId)
 		{
 			var result = await wishListVacant.GetVacantWishList(vacantProfileId);
 			return StatusCode(result.StatusCode, result);
@@ -45,8 +45,8 @@ namespace FinalProject.API.Controllers
 
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpDelete]
-		public async Task<IActionResult> RemoveWishList(int vacantProfileId, int loggedInUserId)
+		[HttpDelete("wishlist/{vacantProfileId}")]
+		public async Task<IActionResult> RemoveWishList(int vacantProfileId,[FromQuery] int loggedInUserId)
 		{
 			var result = await wishListVacant.RemoveVacantWishList(vacantProfileId, loggedInUserId);
 			return StatusCode(result.StatusCode, result);

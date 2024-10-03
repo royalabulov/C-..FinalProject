@@ -105,58 +105,6 @@ namespace FinalProject.BLL.Services.Implementation
 			return "Less than a day left";
 		}
 
-
-
-
-
-		public async Task<GenericResponseApi<bool>> RemoveAdvertising(int id)
-		{
-			var response = new GenericResponseApi<bool>();
-
-			try
-			{
-				var getById = await unitOfWork.GetRepository<Advertising>().GetById(id);
-				if (getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				unitOfWork.GetRepository<Advertising>().Remove(getById);
-				await unitOfWork.Commit();
-
-			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while deleting the Advertising: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
-			return response;
-		}
-
-
-		public async Task<GenericResponseApi<bool>> UpdateAdvertising(UpdateAdvertisingDTO updateAdvertising)
-		{
-			var response = new GenericResponseApi<bool>();
-
-			try
-			{
-				var getById = await unitOfWork.GetRepository<Advertising>().GetById(updateAdvertising.Id);
-				if (getById == null)
-				{
-					response.Failure("Id not found", 404);
-					return response;
-				}
-				var mapping = mapper.Map(updateAdvertising, getById);
-				unitOfWork.GetRepository<Advertising>().Update(mapping);
-				await unitOfWork.Commit();
-			}
-			catch (Exception ex)
-			{
-				response.Failure($"An error occurred while updating the Category: {ex.Message}");
-				Console.WriteLine(ex.Message);
-			}
-			return response;
-		}
 	}
 
 }

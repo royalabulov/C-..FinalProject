@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class CategoryController : ControllerBase
 	{
@@ -43,7 +43,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpDelete]
+		[HttpDelete("{id:int}")]
 		public async Task<IActionResult> DeleteCategory(int id)
 		{
 			var result = await categoryService.DeleteCategory(id);

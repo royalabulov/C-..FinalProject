@@ -108,7 +108,9 @@ namespace FinalProject.BLL.Services.Implementation
 				response.Failure("Id not found", 404);
 				return response;
 			}
-			unitOfWork.GetRepository<VacantProfile>().Update(getById);
+
+			var mapping = mapper.Map(updateVacantProfile, getById);
+			unitOfWork.GetRepository<VacantProfile>().Update(mapping);
 			await unitOfWork.Commit();
 
 			return response;

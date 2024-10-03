@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class VacantController : ControllerBase
 	{
@@ -37,5 +37,20 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
+		[HttpPut]
+		public async Task<IActionResult> UpdateVacant(UpdateVacantProfileDTO updateVacantProfile)
+		{
+			var result = await vacantProfileService.UpdateVacantProfile(updateVacantProfile);
+			return StatusCode(result.StatusCode, result);
+		}
+
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+		[HttpDelete("{id:int}")]
+		public async Task<IActionResult> Delete(int id)
+		{
+			var result = await vacantProfileService.DeleteVacant(id);
+			return StatusCode(result.StatusCode, result);
+		}
 	}
 }

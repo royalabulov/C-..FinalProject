@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class LoginController : ControllerBase
 	{
@@ -19,14 +19,14 @@ namespace FinalProject.API.Controllers
 			this.loginService = loginService;
 		}
 
-		[HttpPost]
+		[HttpPost("login")]
 		public async Task<IActionResult> Login(LoginCreateDTO loginCreateDTO)
 		{
 			var result = await loginService.Login(loginCreateDTO);
 			return StatusCode(result.StatusCode,result);
 		}
 
-		[HttpPost]
+		[HttpPost("logout")]
 		public async Task<IActionResult> LogOut()
 		{
 			var result = await loginService.Logout();
@@ -34,14 +34,15 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpPost]
+		[HttpPost("refresh-token")]
 		public async Task<IActionResult> LoginWithRefreshToken(string refreshToken)
 		{
 			var result = await loginService.LoginWithRefreshTokenAsync(refreshToken);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost]
+		[HttpPost("password-reset")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Company,Vacant")]
 		public async Task<IActionResult> PasswordReset(PasswordResetDTO passwordResetDTO)
 		{
 			var result = await loginService.PasswordReset(passwordResetDTO);
