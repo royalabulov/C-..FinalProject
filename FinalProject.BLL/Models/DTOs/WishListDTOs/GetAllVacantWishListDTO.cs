@@ -8,8 +8,8 @@ namespace FinalProject.BLL.Models.DTOs.WishListDTOs
 {
 	public class GetAllVacantWishListDTO
 	{
-		public int Id { get; set; }
-		public string VacantProfile {  get; set; }
-
+		public int VacantProfileId { get; set; }
+		public string VacantProfileName { get; set; }
+		public List<VacancyDetailsDTO> VacancyDetails { get; set; }
 	}
 }

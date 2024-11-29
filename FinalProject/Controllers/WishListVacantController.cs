@@ -46,9 +46,9 @@ namespace FinalProject.API.Controllers
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
 		[HttpDelete("wishlist/{vacantProfileId}")]
-		public async Task<IActionResult> RemoveWishList(int vacantProfileId,[FromQuery] int loggedInUserId)
+		public async Task<IActionResult> RemoveWishList(int vacantProfileId,[FromQuery] int vacancyId)
 		{
-			var result = await wishListVacant.RemoveVacantWishList(vacantProfileId, loggedInUserId);
+			var result = await wishListVacant.RemoveVacantWishList(vacantProfileId, vacancyId);
 			return StatusCode(result.StatusCode, result);
 		}
 	}

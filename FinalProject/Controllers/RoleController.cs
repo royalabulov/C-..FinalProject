@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinalProject.API.Controllers
 {
 	[Route("api/[controller]")]
-	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+	//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 	[ApiController]
 	public class RoleController : ControllerBase
 	{
@@ -20,7 +20,6 @@ namespace FinalProject.API.Controllers
 
 
 		[HttpGet]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> GetAllRole()
 		{
 			var result = await roleService.GetAllRoles();
@@ -28,7 +27,6 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpPost]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> CreateRole(string roleName)
 		{
 			var result = await roleService.CreateRole(roleName);
@@ -36,7 +34,6 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpPut]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> UpdateRole(AppRoleUpdateDTO role)
 		{
 			var result = await roleService.UpdateRole(role);
@@ -44,7 +41,6 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteRole(int id)
 		{
 			var result = await roleService.RemoveRole(id);

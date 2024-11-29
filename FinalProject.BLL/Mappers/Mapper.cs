@@ -22,6 +22,7 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<AppUser, UserUpdateDTO>().ReverseMap();
 			CreateMap<UserCreateDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
 			CreateMap<CreateCompanyDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
+
 			//ROLE
 			CreateMap<AppRole, AppRoleGetDTO>().ReverseMap();
 			CreateMap<AppRole, AppRoleUpdateDTO>().ReverseMap();
@@ -45,7 +46,7 @@ namespace FinalProject.BLL.Mappers
 			//Vacant
 			CreateMap<VacantProfile, CreateVacantProfileDTO>().ReverseMap();
 			CreateMap<VacantProfile, GetAllVacantDTO>().ReverseMap();
-			CreateMap<VacantProfile,UpdateVacantProfileDTO>().ReverseMap();
+			CreateMap<VacantProfile, UpdateVacantProfileDTO>().ReverseMap();
 
 
 			//WishListVacant
@@ -58,22 +59,19 @@ namespace FinalProject.BLL.Mappers
 
 			CreateMap<WishListVacant, AddVacantWishListDTO>().ForMember(ws => ws.VacantProfileId, opt => opt.MapFrom(src => src.VacantProfileId))
 				.ForMember(ws => ws.VacancyId, opt => opt.MapFrom(src => src.VacancyId)).ReverseMap();
-
-
+			
+			
 			//Advertising
 			CreateMap<CreateAdvertisingDTO, Advertising>()
 			   .ForMember(dest => dest.StartTime, opt => opt.Ignore())
 			   .ForMember(dest => dest.ExpireTime, opt => opt.Ignore())
 			   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
 
-			CreateMap<Advertising, GetAllAdvertisingDTO>()
-			   .ForMember(dest => dest.TimeLeft,
-			   opt => opt.MapFrom(src => AdvertisingService.CalculatorTimeLeft(src.ExpireTime, DateTime.Now)));
 
 
+			//CreateMap<WishListVacancy, GetAllVacancyWishListDTO>()
+			//	.ForMember(a => a.VacancyName, opt => opt.MapFrom(x => x.Vacancy.ToList()));
 
-			CreateMap<WishListVacancy, GetAllVacancyWishListDTO>()
-				.ForMember(a => a.VacancyName, opt => opt.MapFrom(x => x.Vacancy.ToList()));
 		}
 	}
 }

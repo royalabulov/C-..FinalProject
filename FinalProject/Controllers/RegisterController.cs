@@ -20,21 +20,20 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpGet("allusers")]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> GetAllRegisterUser()
 		{
 			var result = await registerService.GelAllUser();
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpGet("users/{id}/roles")]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		public async Task<IActionResult> GetRolesToUserAsync(string Id)
+
+		[HttpGet("users/id/roles")]
+		public async Task<IActionResult> GetRoleAsync(int userId)
 		{
-			var result = await registerService.GetRolesToUserAsync(Id);
+			var result = await registerService.GetRolesAsync(userId);
 			return StatusCode(result.StatusCode, result);
 		}
-
 		
 		[HttpPost("vacant")]
 		public async Task<IActionResult> CreateUser(UserCreateDTO userCreateDTO)
@@ -46,7 +45,7 @@ namespace FinalProject.API.Controllers
 
 
 		[HttpPost("companies")]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> CreateCompany(CreateCompanyDTO companyCreateDTO)
 		{
 			var result = await registerService.CreateCompany(companyCreateDTO);
@@ -54,7 +53,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[HttpPost("assign-role-to-user")]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> AssignRoleToUserAsync(string Id, string[] roles)
 		{
 			var result = await	registerService.AssignRoleToUserAsync($"{Id}", roles);

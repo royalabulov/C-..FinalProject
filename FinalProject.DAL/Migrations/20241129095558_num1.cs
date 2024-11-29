@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FinalProject.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class mig1 : Migration
+    public partial class num1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -224,6 +224,28 @@ namespace FinalProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Advertising",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Advertising", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Advertising_Companys_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Subscriptions",
                 columns: table => new
                 {
@@ -232,8 +254,7 @@ namespace FinalProject.DAL.Migrations
                     HeaderName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<int>(type: "int", nullable: false),
                     SubscriptionLevel = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubscriptionExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                    CompanyId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -242,8 +263,7 @@ namespace FinalProject.DAL.Migrations
                         name: "FK_Subscriptions_Companys_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -258,13 +278,18 @@ namespace FinalProject.DAL.Migrations
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsPremium = table.Column<bool>(type: "bit", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    AdvertisingId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vacancy", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vacancy_Advertising_AdvertisingId",
+                        column: x => x.AdvertisingId,
+                        principalTable: "Advertising",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Vacancy_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -275,29 +300,6 @@ namespace FinalProject.DAL.Migrations
                         name: "FK_Vacancy_Companys_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Advertising",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsPremium = table.Column<bool>(type: "bit", nullable: false),
-                    VacancyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advertising", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Advertising_Vacancy_VacancyId",
-                        column: x => x.VacancyId,
-                        principalTable: "Vacancy",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -327,9 +329,9 @@ namespace FinalProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Advertising_VacancyId",
+                name: "IX_Advertising_CompanyId",
                 table: "Advertising",
-                column: "VacancyId");
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -382,6 +384,11 @@ namespace FinalProject.DAL.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Vacancy_AdvertisingId",
+                table: "Vacancy",
+                column: "AdvertisingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vacancy_CategoryId",
                 table: "Vacancy",
                 column: "CategoryId");
@@ -406,9 +413,6 @@ namespace FinalProject.DAL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Advertising");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -438,6 +442,9 @@ namespace FinalProject.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "VacantProfiles");
+
+            migrationBuilder.DropTable(
+                name: "Advertising");
 
             migrationBuilder.DropTable(
                 name: "Categories");

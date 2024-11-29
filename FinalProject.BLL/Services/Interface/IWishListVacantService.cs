@@ -8,7 +8,7 @@ namespace FinalProject.BLL.Services.Interface
 	{
 		Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetVacantWishList(int vacantProfileId);
 		Task<GenericResponseApi<bool>> AddVacantWishList(AddVacantWishListDTO addVacant);
-		Task<GenericResponseApi<bool>> RemoveVacantWishList(int vacantProfileId, int loggedInUserId);
-		Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacantWishList();
+		Task<GenericResponseApi<bool>> RemoveVacantWishList(int vacantProfileId, int vacancyId);
+		Task<GenericResponseApi<List<GetAllVacantWishListDTO>>> GetAllVacantWishList();
 	}
 }

@@ -18,7 +18,7 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly IUnitOfWork unitOfWork;
 		private readonly ILogger<VacancyService> logger;
 
-		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork,ILogger<VacancyService> logger)
+		public VacancyService(IMapper mapper, IUnitOfWork unitOfWork, ILogger<VacancyService> logger)
 		{
 			this.mapper = mapper;
 			this.unitOfWork = unitOfWork;
@@ -86,7 +86,7 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-	
+
 
 		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetCompanyVacancy(int companyId)
 		{
@@ -96,7 +96,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var vacancies = await unitOfWork.GetRepository<Vacancy>().GetAsQueryable()
 				.Where(x => x.CompanyId == companyId)
-				.OrderByDescending(o => o.CreateDate)
+				.OrderByDescending(o => o.CreateDate).Include(x => x.Company)
 				.ToListAsync();
 
 			logger.LogInformation($"Retrieved {vacancies.Count} vacancies for companyId: {companyId}.");
@@ -124,7 +124,7 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var categoryVacancy = await unitOfWork.GetRepository<Vacancy>()
 				.GetAsQueryable()
-				.Where(x => x.CategoryId == categoryId).Include(x => x.Company)
+				.Where(x => x.CategoryId == categoryId).Include(x => x.Company).Include(x=>x.Advertising)
 				.ToListAsync();
 
 			logger.LogInformation($"Retrieved {categoryVacancy.Count} vacancies for categoryId: {categoryId}.");
@@ -139,10 +139,13 @@ namespace FinalProject.BLL.Services.Implementation
 			var premiumVacancy = categoryVacancy.Where(x => x.Advertising != null && x.Advertising.ExpireTime >= DateTime.Now).ToList();
 			var regularVacancy = categoryVacancy.Where(x => x.Advertising == null || x.Advertising.ExpireTime <= DateTime.Now).ToList();
 
-			var result = premiumVacancy.Concat(regularVacancy).ToList();
+			var result = premiumVacancy.Concat(regularVacancy)
+				.OrderByDescending(x => x.Advertising != null && x.Advertising.ExpireTime >= DateTime.Now)
+				.ToList();
 
 
 			var mapping = mapper.Map<List<GetAllVacancyDTO>>(result);
+
 			response.Success(mapping);
 
 			logger.LogInformation($"Successfully retrieved vacancies for categoryId: {categoryId}. Total vacancies: {result.Count}.");
@@ -203,14 +206,34 @@ namespace FinalProject.BLL.Services.Implementation
 				mapping.CompanyId = createVacancy.CompanyId;
 				mapping.ExpireDate = createVacancy.ExpireDate;
 
-				if (createVacancy.AdvertisingId.HasValue)
+				if (activeAdvertising != null)
 				{
-					mapping.AdvertisingId = createVacancy.AdvertisingId.Value;
+					mapping.AdvertisingId = activeAdvertising.Id;
+					logger.LogInformation($"Company has an active advertising with ID {activeAdvertising.Id}.");
+				}
+				else if (createVacancy.AdvertisingId.HasValue && createVacancy.AdvertisingId.Value != 0)
+				{
+					var advertisingExists = await unitOfWork.GetRepository<Advertising>()
+					.GetAsQueryable()
+					.AnyAsync(x => x.Id == createVacancy.AdvertisingId.Value);
+
+					if (advertisingExists)
+					{
+						mapping.AdvertisingId = createVacancy.AdvertisingId.Value;
+						logger.LogInformation($"AdvertisingId manually provided: {createVacancy.AdvertisingId.Value}.");
+					}
+					else
+					{
+						mapping.AdvertisingId = null;
+						logger.LogWarning($"Provided AdvertisingId {createVacancy.AdvertisingId.Value} does not exist.");
+					}
 				}
 				else
 				{
 					mapping.AdvertisingId = null;
+					logger.LogInformation("Company has no active advertising.");
 				}
+
 
 
 				if (activeAdvertising != null)

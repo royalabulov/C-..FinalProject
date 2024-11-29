@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.DAL.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20240928141151_num1")]
+    [Migration("20241129095558_num1")]
     partial class num1
     {
         /// <inheritdoc />

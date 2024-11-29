@@ -12,11 +12,11 @@ namespace FinalProject.BLL.Services.Interface
 		Task<GenericResponseApi<bool>> UpdateUser(UserUpdateDTO userUpdateDTO);
 		Task<GenericResponseApi<bool>> RemoveUser(int id);
 
-		Task UpdateRefreshToken(string refreshToken,AppUser user,DateTime accessTokenData);
+		Task UpdateRefreshToken(string refreshToken,AppUser user,DateTime accessTokenData);		
 
 		Task<GenericResponseApi<bool>> AssignRoleToUserAsync(string Id, string[] roles);
-
-		Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName);
+			
+		Task<GenericResponseApi<string[]>> GetRolesAsync(int userId);
 
 	}
 }

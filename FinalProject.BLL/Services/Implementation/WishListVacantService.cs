@@ -18,7 +18,7 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly IMapper mapper;
 		private readonly ILogger<WishListVacantService> logger;
 
-		public WishListVacantService(IUnitOfWork unitOfWork, IMapper mapper,ILogger<WishListVacantService> logger)
+		public WishListVacantService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<WishListVacantService> logger)
 		{
 			this.unitOfWork = unitOfWork;
 			this.mapper = mapper;
@@ -35,8 +35,9 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var wishList = await unitOfWork.GetRepository<WishListVacant>()
 				.GetAsQueryable()
-				.Include(v => v.Vacancy)
-				.Where(x => x.VacantProfileId == vacantProfileId).ToListAsync();
+				.Where(x => x.VacantProfileId == vacantProfileId)
+				.Include(v => v.Vacancy).ThenInclude(x => x.Company)
+				.ToListAsync();
 
 			if (wishList == null || !wishList.Any())
 			{
@@ -47,21 +48,24 @@ namespace FinalProject.BLL.Services.Implementation
 
 			var mapping = mapper.Map<List<GetAllVacancyDTO>>(wishList.Select(x => x.Vacancy).ToList().Distinct().ToList());
 
-	        response.Success(mapping);
+			response.Success(mapping);
 
 			logger.LogInformation($"GetVacantWishList method completed successfully for VacantProfileId: {vacantProfileId}");
 			return response;
 		}
 
-		public async Task<GenericResponseApi<List<GetAllVacancyDTO>>> GetAllVacantWishList()
+		public async Task<GenericResponseApi<List<GetAllVacantWishListDTO>>> GetAllVacantWishList()
 		{
-			var response = new GenericResponseApi<List<GetAllVacancyDTO>>();
+			var response = new GenericResponseApi<List<GetAllVacantWishListDTO>>();
 
 			logger.LogInformation("GetAllVacantWishList method started.");
 
 			var wishList = await unitOfWork.GetRepository<WishListVacant>()
 				.GetAsQueryable()
-				.Include(v => v.Vacancy).ToListAsync();
+				.Include(x => x.VacantProfile)
+				.Include(v => v.Vacancy)
+				.ThenInclude(x => x.Company)
+				.ToListAsync();
 
 			if (wishList == null || !wishList.Any())
 			{
@@ -70,11 +74,28 @@ namespace FinalProject.BLL.Services.Implementation
 				return response;
 			}
 
-			var mapping = mapper.Map<List<GetAllVacancyDTO>>(wishList.Select(x => x.Vacancy).ToList().Distinct().ToList());
+			var result = wishList
+				.GroupBy(x => x.VacantProfile)
+				.Select(group => new GetAllVacantWishListDTO
+				{
+					VacantProfileId = group.Key.Id,
+					VacantProfileName = group.FirstOrDefault().VacantProfile.FirstName,
+					VacancyDetails = group
+					.GroupBy(x => x.VacancyId)
+					.Select(x => new VacancyDetailsDTO
+					{
+						VacancyId = x.Key,
+						VacancyName = x.FirstOrDefault().Vacancy.HeaderName,
+						CompanyName = x.FirstOrDefault().Vacancy.Company.Name
+					}).ToList()
 
-			response.Success(mapping);
+				}).ToList();
+
+
+			
 
 			logger.LogInformation("GetAllVacantWishList method completed successfully.");
+			response.Success(result);
 			return response;
 		}
 
@@ -98,9 +119,9 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 
 			var wishListProfile = mapper.Map<WishListVacant>(addVacant);
-		
+
 			await unitOfWork.GetRepository<WishListVacant>().AddAsync(wishListProfile);
-			
+
 			await unitOfWork.Commit();
 			response.Success(true);
 
@@ -110,20 +131,20 @@ namespace FinalProject.BLL.Services.Implementation
 
 		}
 
-		public async Task<GenericResponseApi<bool>> RemoveVacantWishList(int vacantProfileId, int loggedInUserId)
+		public async Task<GenericResponseApi<bool>> RemoveVacantWishList(int vacantProfileId, int vacancyId)
 		{
 			var response = new GenericResponseApi<bool>();
 
-			logger.LogInformation($"RemoveVacantWishList method started for VacantProfileId: {vacantProfileId} and UserId: {loggedInUserId}");
+			logger.LogInformation($"RemoveVacantWishList method started for VacantProfileId: {vacantProfileId} and UserId: {vacancyId}");
 
 			var wishList = await unitOfWork.GetRepository<WishListVacant>()
 				.GetAsQueryable()
 				.Include(x => x.VacantProfile)
-				.FirstOrDefaultAsync(x => x.VacantProfileId == vacantProfileId && x.VacantProfile.AppUserId == loggedInUserId);
+				.FirstOrDefaultAsync(x => x.VacantProfileId == vacantProfileId && x.VacancyId == vacancyId);
 
 			if (wishList == null)
 			{
-				logger.LogWarning($"No matching wish list found for VacantProfileId: {vacantProfileId} and UserId: {loggedInUserId}");
+				logger.LogWarning($"No matching wish list found for VacantProfileId: {vacantProfileId} and UserId: {vacancyId}");
 				response.Failure("No matching wish list found for the current user", 404);
 				return response;
 			}
@@ -131,7 +152,7 @@ namespace FinalProject.BLL.Services.Implementation
 			unitOfWork.GetRepository<WishListVacant>().Remove(wishList);
 			await unitOfWork.Commit();
 			response.Success(true);
-			logger.LogInformation($"RemoveVacantWishList method completed successfully for VacantProfileId: {vacantProfileId} and UserId: {loggedInUserId}");
+			logger.LogInformation($"RemoveVacantWishList method completed successfully for VacantProfileId: {vacantProfileId} and UserId: {vacancyId}");
 			return response;
 		}
 	}

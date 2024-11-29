@@ -27,6 +27,7 @@ namespace FinalProject.DAL.Context
 		   .WithMany(c => c.Advertising)
 		   .HasForeignKey(a => a.CompanyId);
 
+
 			modelBuilder.Entity<Vacancy>()
 				.HasOne(v => v.Company)
 				.WithMany(c => c.Vacancies)
@@ -89,7 +90,6 @@ namespace FinalProject.DAL.Context
 		public DbSet<Advertising> Advertising { get; set; }
 		public DbSet<Subscription> Subscriptions { get; set; }
 		public DbSet<VacantProfile> VacantProfiles { get; set; }
-		//public DbSet<WishListVacancy> WishListVacancies { get; set; }
 		public DbSet<WishListVacant> WishListVacants { get; set; }
 	}
 }

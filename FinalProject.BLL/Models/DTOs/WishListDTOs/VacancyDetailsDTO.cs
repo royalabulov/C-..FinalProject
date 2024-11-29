@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Models.DTOs.WishListDTOs
 {
-	public class GetAllVacancyWishListDTO
+	public class VacancyDetailsDTO
 	{
-		public int Id {  get; set; }
-		public string? VacancyName { get; set; }
+		public int VacancyId { get; set; }  
+		public string VacancyName { get; set; }  
+		public string CompanyName { get; set; }  
 	}
 }

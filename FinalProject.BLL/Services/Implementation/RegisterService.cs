@@ -2,6 +2,7 @@
 using FinalProject.BLL.Models.DTOs.RegisterDTOs;
 using FinalProject.BLL.Models.Exception.GenericResponseApi;
 using FinalProject.BLL.Services.Interface;
+using FinalProject.DAL.Repositories;
 using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace FinalProject.BLL.Services.Implementation
 		private readonly IMapper mapper;
 		private readonly ILogger<RegisterService> logger;
 
-		public RegisterService(UserManager<AppUser> userManager, IMapper mapper,ILogger<RegisterService> logger)
+		public RegisterService(UserManager<AppUser> userManager, IMapper mapper, ILogger<RegisterService> logger)
 		{
 			this.userManager = userManager;
 			this.mapper = mapper;
@@ -185,7 +186,7 @@ namespace FinalProject.BLL.Services.Implementation
 				user.RefreshToken = refreshToken;
 				user.ExpireTimeRFT = accessTokenData.AddMinutes(15);
 				await userManager.UpdateAsync(user);
-				logger.LogInformation("Refresh token updated for user: {UserId}", user.Id);				
+				logger.LogInformation("Refresh token updated for user: {UserId}", user.Id);
 			}
 		}
 
@@ -200,7 +201,11 @@ namespace FinalProject.BLL.Services.Implementation
 				{
 
 					var userRoles = await userManager.GetRolesAsync(user);
-					await userManager.RemoveFromRolesAsync(user, userRoles);
+					if (userRoles.Count > 0)
+					{
+						await userManager.RemoveFromRolesAsync(user, userRoles);
+
+					}
 					await userManager.AddToRolesAsync(user, roles);
 
 					response.Data = true;
@@ -219,21 +224,41 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		public async Task<GenericResponseApi<string[]>> GetRolesToUserAsync(string userIdOrName)
+
+
+		public async Task<GenericResponseApi<string[]>> GetRolesAsync(int userId)
 		{
 			var response = new GenericResponseApi<string[]>();
 
-			var user = await userManager.FindByIdAsync(userIdOrName);
-
 			try
 			{
-				if (user != null)
+				var user = await userManager.FindByIdAsync(userId.ToString());
+				if (user == null)
 				{
-					var userRoles = await userManager.GetRolesAsync(user);
+					response.Data = null;
+					response.StatusCode = 404;
+					logger.LogWarning("User with ID {UserId} not found.", userId);
+					return response;
+				}
 
+
+
+				var userRoles = await userManager.GetRolesAsync(user);
+				if (userRoles == null || !userRoles.Any())
+				{
+
+					response.Data = null;
+					response.StatusCode = 200;
+					response.IsSuccess = true;
+					logger.LogInformation("User with ID {UserId} has no roles.", userId);
+				}
+				else
+				{
 					response.StatusCode = 200;
 					response.Data = userRoles.ToArray();
-					logger.LogInformation("Retrieved roles for user: {UserId}", userIdOrName);
+					response.IsSuccess = true;
+					logger.LogInformation("Retrieved roles for user: {UserId}", userId.ToString());
+
 				}
 
 			}
@@ -241,11 +266,9 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				response.Data = null;
 				response.StatusCode = 500;
-				logger.LogError(ex, "Error occurred while retrieving roles for user: {UserId}", userIdOrName);
+				logger.LogError(ex, "Error occurred while retrieving roles for user: {UserId}", userId.ToString());
 			}
 			return response;
 		}
-
-
 	}
 }
