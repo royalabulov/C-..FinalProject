@@ -31,40 +31,49 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			var existingUser = await userManager.FindByEmailAsync(userCreateDTO.Email);
-			if (existingUser != null)
+			try
 			{
-				response.Failure("User with this email already exists.", 400);
-				logger.LogWarning("Attempt to create vacant user failed: Email already exists - {Email}", userCreateDTO.Email);
-				return response;
+				var existingUser = await userManager.FindByEmailAsync(userCreateDTO.Email);
+				if (existingUser != null)
+				{
+					response.Failure("User with this email already exists.", 400);
+					logger.LogWarning("Attempt to create vacant user failed: Email already exists - {Email}", userCreateDTO.Email);
+					return response;
+				}
+
+				using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					var mapping = mapper.Map<AppUser>(userCreateDTO);
+
+
+					var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
+					if (!userEntity.Succeeded)
+					{
+						response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+						logger.LogError("Failed to create vacant user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
+						return response;
+					}
+
+					var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Vacant");
+					if (!addToRoleResult.Succeeded)
+					{
+						await userManager.DeleteAsync(mapping);
+						response.Failure("Failed to assign role. User creation has been rolled back.");
+						logger.LogError("Failed to assign role to vacant user: {Email}", userCreateDTO.Email);
+						return response;
+					}
+
+					transaction.Complete();
+
+					response.Success(true);
+					logger.LogInformation("Vacant user created successfully: {Email}", userCreateDTO.Email);
+				}
+
 			}
-
-			using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			catch (Exception ex)
 			{
-				var mapping = mapper.Map<AppUser>(userCreateDTO);
-
-
-				var userEntity = await userManager.CreateAsync(mapping, userCreateDTO.Password);
-				if (!userEntity.Succeeded)
-				{
-					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
-					logger.LogError("Failed to create vacant user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
-					return response;
-				}
-
-				var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Vacant");
-				if (!addToRoleResult.Succeeded)
-				{
-					await userManager.DeleteAsync(mapping);
-					response.Failure("Failed to assign role. User creation has been rolled back.");
-					logger.LogError("Failed to assign role to vacant user: {Email}", userCreateDTO.Email);
-					return response;
-				}
-
-				transaction.Complete();
-
-				response.Success(true);
-				logger.LogInformation("Vacant user created successfully: {Email}", userCreateDTO.Email);
+				logger.LogError(ex, "An unexpected error occurred while creating a vacant user: {Email}", userCreateDTO.Email);
+				response.Failure("An unexpected error occurred. Please try again later.", 500);
 			}
 
 			return response;
@@ -74,45 +83,107 @@ namespace FinalProject.BLL.Services.Implementation
 		{
 			var response = new GenericResponseApi<bool>();
 
-			var existingUser = await userManager.FindByEmailAsync(createCompanyDTO.Email);
-			if (existingUser != null)
+			try
 			{
-				response.Failure("User with this email already exists.", 400);
-				logger.LogWarning("Attempt to create company user failed: Email already exists - {Email}", createCompanyDTO.Email);
-				return response;
+				var existingUser = await userManager.FindByEmailAsync(createCompanyDTO.Email);
+				if (existingUser != null)
+				{
+					response.Failure("User with this email already exists.", 400);
+					logger.LogWarning("Attempt to create company user failed: Email already exists - {Email}", createCompanyDTO.Email);
+					return response;
+				}
+
+				using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					var mapping = mapper.Map<AppUser>(createCompanyDTO);
+
+
+					var userEntity = await userManager.CreateAsync(mapping, createCompanyDTO.Password);
+					if (!userEntity.Succeeded)
+					{
+						response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+						logger.LogError("Failed to create company user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
+						return response;
+					}
+
+
+					var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Company");
+					if (!addToRoleResult.Succeeded)
+					{
+						await userManager.DeleteAsync(mapping);
+						response.Failure("Failed to assign role. User creation has been rolled back.");
+						logger.LogError("Failed to assign role to company user: {Email}", createCompanyDTO.Email);
+						return response;
+					}
+
+					transaction.Complete();
+
+					response.Success(true);
+					logger.LogInformation("Company user created successfully: {Email}", createCompanyDTO.Email);
+				}
+
 			}
-
-			using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			catch (Exception ex)
 			{
-				var mapping = mapper.Map<AppUser>(createCompanyDTO);
-
-
-				var userEntity = await userManager.CreateAsync(mapping, createCompanyDTO.Password);
-				if (!userEntity.Succeeded)
-				{
-					response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
-					logger.LogError("Failed to create company user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
-					return response;
-				}
-
-
-				var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Company");
-				if (!addToRoleResult.Succeeded)
-				{
-					await userManager.DeleteAsync(mapping);
-					response.Failure("Failed to assign role. User creation has been rolled back.");
-					logger.LogError("Failed to assign role to company user: {Email}", createCompanyDTO.Email);
-					return response;
-				}
-
-				transaction.Complete();
-
-				response.Success(true);
-				logger.LogInformation("Company user created successfully: {Email}", createCompanyDTO.Email);
+				logger.LogError(ex, "An unexpected error occurred while creating a moderator user: {Email}", createCompanyDTO.Email);
+				response.Failure("An unexpected error occurred. Please try again later.", 500);
 			}
 
 			return response;
 		}
+
+		public async Task<GenericResponseApi<bool>> CreateModerators(ModeratorDTO moderatorDTO)
+		{
+			var response = new GenericResponseApi<bool>();
+			try
+			{
+				var existingUser = await userManager.FindByEmailAsync(moderatorDTO.Email);
+				if (existingUser != null)
+				{
+					response.Failure("User with this email already exists.", 400);
+					logger.LogWarning("Attempt to create company user failed: Email already exists - {Email}", moderatorDTO.Email);
+					return response;
+				}
+
+				using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					var mapping = mapper.Map<AppUser>(moderatorDTO);
+
+
+					var userEntity = await userManager.CreateAsync(mapping, moderatorDTO.Password);
+					if (!userEntity.Succeeded)
+					{
+						response.Failure(userEntity.Errors.Select(e => e.Description).ToList());
+						logger.LogError("Failed to create company user: {Errors}", string.Join(", ", userEntity.Errors.Select(e => e.Description)));
+						return response;
+					}
+
+
+					var addToRoleResult = await userManager.AddToRoleAsync(mapping, "Moderator");
+					if (!addToRoleResult.Succeeded)
+					{
+						await userManager.DeleteAsync(mapping);
+						response.Failure("Failed to assign role. User creation has been rolled back.");
+						logger.LogError("Failed to assign role to company user: {Email}", moderatorDTO.Email);
+						return response;
+					}
+
+					transaction.Complete();
+
+					response.Success(true);
+					logger.LogInformation("Company user created successfully: {Email}", moderatorDTO.Email);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex, "An unexpected error occurred while creating a moderator user: {Email}", moderatorDTO.Email);
+				response.Failure("An unexpected error occurred. Please try again later.", 500);
+			}
+
+			return response;
+		}
+
 
 		public async Task<GenericResponseApi<List<AllUserGetDTO>>> GelAllUser()
 		{
@@ -179,6 +250,7 @@ namespace FinalProject.BLL.Services.Implementation
 		}
 
 
+
 		public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenData)
 		{
 			if (user != null)
@@ -223,8 +295,6 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			return response;
 		}
-
-
 
 		public async Task<GenericResponseApi<string[]>> GetRolesAsync(int userId)
 		{

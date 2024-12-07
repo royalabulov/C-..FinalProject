@@ -28,9 +28,12 @@ namespace FinalProject.BLL.Models.Validations.Register
 				.WithName("Email");
 
 			RuleFor(a => a.Password)
-				.NotEmpty().WithMessage("Password cannot be empty.")
-				.MinimumLength(6).WithMessage("Password must be at least 6 characters.")
-				.WithName("Password");
+				.NotEmpty().WithMessage("Password is required.")
+				.MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+				.Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+				.Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+				.Matches("[0-9]").WithMessage("Password must contain at least one number.")
+				.Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
 
 			RuleFor(a => a.ConfirmPassword)
 				.NotEmpty().WithMessage("Password cannot be empty.")
@@ -49,7 +52,7 @@ namespace FinalProject.BLL.Models.Validations.Register
 
 			RuleFor(register => register.PhoneNumber)
 				.NotEmpty().WithMessage("PhoneNumber cannot be empty")
-				.Matches(@"^\+?\d{10,15}$").WithMessage("Please enter a valid PhoneNumber.")
+				.Matches(@"^\+?\d{10,15}$").WithMessage("Phone number must be a valid phone number.")
 				.WithName("PhoneNumber");
 
 		}

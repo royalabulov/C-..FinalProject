@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]/[action]")]
+	[Route("api")]
     [ApiController]
     public class VacancyController : ControllerBase
     {
@@ -17,30 +17,30 @@ namespace FinalProject.API.Controllers
 			this.vacancyService = vacancyService;
 		}
 
-        [HttpGet("[action]")]
+        [HttpGet("allVacancies")]
         public async Task<IActionResult> GetAllVacancies()
         {
             var result = await vacancyService.GetAllVacanciesWithPremium();
             return StatusCode(result.StatusCode, result);
         }
 
-		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpGet("{compnayId:int}")]
+	
+		[HttpGet("companyVacancy/Id")]
         public async Task<IActionResult> GetCompanyVacancy(int compnayId)
         {
             var result = await vacancyService.GetCompanyVacancy(compnayId);
             return StatusCode(result.StatusCode, result);
         }
 
-		[HttpGet("category/{categoryId:int}")]
+		[HttpGet("categoryVacancy/Id")]
 		public async Task<IActionResult> GetCategoryVacancy(int categoryId)
 		{
 			var result = await vacancyService.GetCategoryVacancy(categoryId);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPost("[action]")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company,Moderator")]
+		[HttpPost("vacancy")]
         public async Task<IActionResult> CreateVacancy(CreateVacancyDTO createVacancy)
         {
             var result = await vacancyService.CreateVacancy(createVacancy);
@@ -48,7 +48,7 @@ namespace FinalProject.API.Controllers
         }
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpPut("[action]")]
+		[HttpPut("vacancy")]
         public async Task<IActionResult> UpdateVacancy(UpdateVacancyDTO updateVacancy)
         {
             var result = await vacancyService.UpdateVacancy(updateVacancy);
@@ -56,18 +56,18 @@ namespace FinalProject.API.Controllers
         }
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpDelete("vacancies/{id:int}")]
+		[HttpDelete("vacancies{id}")]
         public async Task<IActionResult> DeleteVacancy(int id)
         {
             var result = await vacancyService.DeleteVacancy(id);
             return StatusCode(result.StatusCode, result);
         }
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
-		[HttpDelete("companyvacancies/{id:int}/{copmanyId:int}")]
-		public async Task<IActionResult> DeleteOwnVacancy(int id, int copmanyId)
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company,Moderator")]
+		[HttpDelete("companyvacancies{vacancyId:int}/{copmanyId:int}")]
+		public async Task<IActionResult> DeleteOwnVacancy(int vacancyId, int copmanyId)
 		{
-			var result = await vacancyService.DeleteCompanyOwnedVacancy(id, copmanyId);
+			var result = await vacancyService.DeleteCompanyOwnedVacancy(vacancyId, copmanyId);
 			return StatusCode(result.StatusCode, result);
 		}
 	}

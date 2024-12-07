@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
 using FinalProject.BLL.Mappers;
+using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
 using FinalProject.BLL.Models.Exception;
+using FinalProject.BLL.Models.Validations.Company;
+using FinalProject.BLL.Models.Validations.Login;
 using FinalProject.BLL.Models.Validations.Register;
+using FinalProject.BLL.Models.Validations.Vacancy;
 using FinalProject.BLL.Services.Implementation;
 using FinalProject.BLL.Services.Interface;
 using FluentValidation;
@@ -31,7 +35,7 @@ namespace FinalProject.BLL
 			services.AddScoped<IAdvertisingService, AdvertisingService>();
 			services.AddScoped<IVacantProfileService, VacantProfileService>();
 			services.AddScoped<IWishListVacantService, WishListVacantService>();
-			
+			services.AddScoped<ICompanyModeratorService, CompanyModeratorService>();
 
 			services.AddFluentValidationAutoValidation()
 				.AddFluentValidationClientsideAdapters()
@@ -41,6 +45,29 @@ namespace FinalProject.BLL
 				.AddFluentValidationClientsideAdapters()
 				.AddValidatorsFromAssemblyContaining<RegisterUpdateDTOValidate>();
 
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<CreateVacantProfileDTO>();
+
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<UpdateVacantProfileDTO>();
+
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<CreateVacancyDTOValidate>();
+
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<LoginCreateDTOValidate>();
+
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<CompanyCreateDTOValidator>();
+
+			services.AddFluentValidationAutoValidation()
+				.AddFluentValidationClientsideAdapters()
+				.AddValidatorsFromAssemblyContaining<CompanyUpdateDTOValidator>();
 		}
 	}
 }

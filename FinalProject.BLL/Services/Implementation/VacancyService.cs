@@ -325,18 +325,18 @@ namespace FinalProject.BLL.Services.Implementation
 			return response;
 		}
 
-		public async Task<GenericResponseApi<bool>> DeleteCompanyOwnedVacancy(int Id, int companyId)
+		public async Task<GenericResponseApi<bool>> DeleteCompanyOwnedVacancy(int vacancyId, int companyId)
 		{
 			var response = new GenericResponseApi<bool>();
 
-			logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {Id} and Company Id: {companyId}");
+			logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {vacancyId} and Company Id: {companyId}");
 
 			var deleteOwnVacancy = await unitOfWork.GetRepository<Vacancy>()
-				.FirstOrDefaultAsync(v => v.Id == Id && v.CompanyId == companyId);
+				.FirstOrDefaultAsync(v => v.Id == vacancyId && v.CompanyId == companyId);
 
 			if (deleteOwnVacancy == null)
 			{
-				logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {Id} and Company Id: {companyId}");
+				logger.LogInformation($"DeleteCompanyOwnedVacancy method started for Vacancy Id: {vacancyId} and Company Id: {companyId}");
 				response.Failure("Id not found or you do not have permission to delete this vacancy", 404);
 				return response;
 			}
@@ -344,7 +344,7 @@ namespace FinalProject.BLL.Services.Implementation
 			unitOfWork.GetRepository<Vacancy>().Remove(deleteOwnVacancy);
 			await unitOfWork.Commit();
 
-			logger.LogInformation($"Vacancy with Id {Id} deleted successfully for Company Id: {companyId}");
+			logger.LogInformation($"Vacancy with Id {vacancyId} deleted successfully for Company Id: {companyId}");
 			response.Success(true);
 			return response;
 		}

@@ -47,6 +47,22 @@ namespace FinalProject.DAL.Context
 
 
 
+			modelBuilder.Entity<CompanyModerator>()
+			   .HasKey(cm => new { cm.CompanyId, cm.ModeratorId });
+
+			modelBuilder.Entity<CompanyModerator>()
+			   .HasOne(cm => cm.Company)
+			   .WithMany(c => c.CompanyModerators)
+			   .HasForeignKey(cm => cm.CompanyId)
+			   .OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<CompanyModerator>()
+			  .HasOne(cm => cm.Moderator)
+			  .WithMany(u => u.companyModerators)
+			  .HasForeignKey(cm => cm.ModeratorId)
+			  .OnDelete(DeleteBehavior.Restrict);
+
+
 			modelBuilder.Entity<VacantProfile>(entity =>
 				{
 					entity.HasIndex(e => e.AppUserId, "IX_VacantProfiles_AppUserId").IsUnique();
@@ -88,8 +104,8 @@ namespace FinalProject.DAL.Context
 		public DbSet<Company> Companys { get; set; }
 		public DbSet<Vacancy> Vacancy { get; set; }
 		public DbSet<Advertising> Advertising { get; set; }
-		public DbSet<Subscription> Subscriptions { get; set; }
 		public DbSet<VacantProfile> VacantProfiles { get; set; }
 		public DbSet<WishListVacant> WishListVacants { get; set; }
+		public DbSet<CompanyModerator> CompanyModerator { get; set; }
 	}
 }

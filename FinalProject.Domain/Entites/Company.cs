@@ -27,5 +27,7 @@ namespace FinalProject.Domain.Entities
 		public int AppUserId {  get; set; }
 		public AppUser AppUser { get; set; }
 
+		public ICollection<CompanyModerator> CompanyModerators { get; set; }
+
 	}
 }

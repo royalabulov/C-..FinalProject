@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 	[ApiController]
 	public class RoleController : ControllerBase
@@ -19,28 +19,28 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet]
+		[HttpGet("role")]
 		public async Task<IActionResult> GetAllRole()
 		{
 			var result = await roleService.GetAllRoles();
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost]
+		[HttpPost("role")]
 		public async Task<IActionResult> CreateRole(string roleName)
 		{
 			var result = await roleService.CreateRole(roleName);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPut]
+		[HttpPut("role")]
 		public async Task<IActionResult> UpdateRole(AppRoleUpdateDTO role)
 		{
 			var result = await roleService.UpdateRole(role);
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpDelete("{id}")]
+		[HttpDelete("role{id}")]
 		public async Task<IActionResult> DeleteRole(int id)
 		{
 			var result = await roleService.RemoveRole(id);

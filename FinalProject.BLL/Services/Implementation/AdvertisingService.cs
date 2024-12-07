@@ -37,8 +37,7 @@ namespace FinalProject.BLL.Services.Implementation
 				return response;
 			}
 			#region
-			//pula gore gunu hesabliyacam mes: 10 man gonderibse 5 e bolecem  2 gunluk reklam verecem startdate.addDays(2) gunu gelecem
-			//vacancylarin getallinda bunu nezere alacam 
+			//pula gore gunu hesabliyacam mes: 10 man gonderibse 5 e bolecem  2 gunluk reklam verecem 
 			#endregion
 
 			var days = (int)(createAdvertising.Price / 5);
@@ -89,7 +88,6 @@ namespace FinalProject.BLL.Services.Implementation
 		}
 
 
-
 		public async Task<GenericResponseApi<List<string>>> GetAllAdvertising()
 		{
 			var response = new GenericResponseApi<List<string>>();
@@ -112,9 +110,9 @@ namespace FinalProject.BLL.Services.Implementation
 			}
 			var premiumTimeInfo = new List<string>();
 
-			// Hər bir şirkət üçün ən son premium vaxtını tapırıq
+			// Hər bir şirkət üçün ən son premium vaxtını tapdım
 			var companyGroups = allAdvertisings
-				.GroupBy(a => a.Company.Name)  // Şirkət adına görə qruplaşdırırıq
+				.GroupBy(a => a.Company.Name)  // Şirkət adına görə qrupladım
 				.ToList();
 
 
@@ -122,10 +120,10 @@ namespace FinalProject.BLL.Services.Implementation
 			{
 				var maxExpireTime = companyGroup
 					.Select(a => a.ExpireTime)
-					.Max();  // Şirkətə aid olan bütün reklamların ən son expireTime-ı
+					.Max(); 
 
 				var timeLeft = CalculatorTimeLeft(maxExpireTime, currentTime);
-				premiumTimeInfo.Add($"{companyGroup.Key}: {timeLeft}"); // Şirkət adı və qalan vaxtı əlavə edirik
+				premiumTimeInfo.Add($"{companyGroup.Key}: {timeLeft}");
 			}
 
 			logger.LogInformation("Fetched premium time left for companies: {Companies}", string.Join(", ", premiumTimeInfo));

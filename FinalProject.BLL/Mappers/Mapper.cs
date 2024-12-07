@@ -10,6 +10,7 @@ using FinalProject.BLL.Models.DTOs.WishListDTOs;
 using FinalProject.BLL.Services.Implementation;
 using FinalProject.Domain.Entites;
 using FinalProject.Domain.Entities;
+using FinalProject.BLL.Models.DTOs.ModeratorDTO;
 
 namespace FinalProject.BLL.Mappers
 {
@@ -22,6 +23,7 @@ namespace FinalProject.BLL.Mappers
 			CreateMap<AppUser, UserUpdateDTO>().ReverseMap();
 			CreateMap<UserCreateDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
 			CreateMap<CreateCompanyDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
+			CreateMap<ModeratorDTO, AppUser>().ForMember(fm => fm.UserName, opt => opt.MapFrom(mf => mf.Email)).ReverseMap();
 
 			//ROLE
 			CreateMap<AppRole, AppRoleGetDTO>().ReverseMap();

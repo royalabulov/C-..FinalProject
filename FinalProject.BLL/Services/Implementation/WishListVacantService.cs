@@ -92,8 +92,6 @@ namespace FinalProject.BLL.Services.Implementation
 				}).ToList();
 
 
-			
-
 			logger.LogInformation("GetAllVacantWishList method completed successfully.");
 			response.Success(result);
 			return response;

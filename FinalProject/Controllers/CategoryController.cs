@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	[ApiController]
 	public class CategoryController : ControllerBase
 	{
@@ -19,14 +19,14 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet("[action]")]
+		[HttpGet("categories")]
 		public async Task<IActionResult> GetAllCategory()
 		{
 			var result = await categoryService.GetAllCategories();
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost("[action]")]
+		[HttpPost("categories")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> CreateCategory(CreateCategoryDTO createCategory)
 		{
@@ -34,7 +34,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPut("[action]")]
+		[HttpPut("categories")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> UpdateCategory(UpdateCategoryDTO updateCategory)
 		{
@@ -42,7 +42,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpDelete("{id:int}")]
+		[HttpDelete("categories{id:int}")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteCategory(int id)
 		{

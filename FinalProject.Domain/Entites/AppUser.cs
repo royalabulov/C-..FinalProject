@@ -12,10 +12,10 @@ namespace FinalProject.Domain.Entities
 
 		//one to one
 		
-		public VacantProfile? VacantProfile { get; set; } 
-		
+		public VacantProfile? VacantProfile { get; set; }
 
-	
+		public ICollection<CompanyModerator> companyModerators { get; set; }
+
 		public string? RefreshToken { get; set; }
 		public DateTime? ExpireTimeRFT { get; set; }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FinalProject.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class num1 : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -246,7 +246,34 @@ namespace FinalProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subscriptions",
+                name: "CompanyModerator",
+                columns: table => new
+                {
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    ModeratorId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyModerator", x => new { x.CompanyId, x.ModeratorId });
+                    table.ForeignKey(
+                        name: "FK_CompanyModerator_AspNetUsers_ModeratorId",
+                        column: x => x.ModeratorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompanyModerator_Companys_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -258,9 +285,9 @@ namespace FinalProject.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Subscriptions_Companys_CompanyId",
+                        name: "FK_Subscription_Companys_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companys",
                         principalColumn: "Id");
@@ -373,14 +400,19 @@ namespace FinalProject.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompanyModerator_ModeratorId",
+                table: "CompanyModerator",
+                column: "ModeratorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Companys_AppUserId",
                 table: "Companys",
                 column: "AppUserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subscriptions_CompanyId",
-                table: "Subscriptions",
+                name: "IX_Subscription_CompanyId",
+                table: "Subscription",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
@@ -429,7 +461,10 @@ namespace FinalProject.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Subscriptions");
+                name: "CompanyModerator");
+
+            migrationBuilder.DropTable(
+                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "WishListVacant");

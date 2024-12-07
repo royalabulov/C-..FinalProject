@@ -8,7 +8,7 @@ using System.Data;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	[ApiController]
 	public class CompanyController : ControllerBase
 	{
@@ -20,7 +20,7 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet("[action]")]
+		[HttpGet("company")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> GetAllCompany()
 		{
@@ -29,7 +29,7 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpPost("[action]")]
+		[HttpPost("company")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
 		public async Task<IActionResult> CreateCompany(CompanyCreateDTO companyCreate)
 		{
@@ -37,7 +37,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPut("[action]")]
+		[HttpPut("company")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Company")]
 		public async Task<IActionResult> UpdateCompany(CompanyUpdateDTO companyUpdate)
 		{
@@ -45,7 +45,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpDelete("{id}")]
+		[HttpDelete("company{id}")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> DeleteCompany(int id)
 		{

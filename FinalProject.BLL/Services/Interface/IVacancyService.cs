@@ -19,6 +19,6 @@ namespace FinalProject.BLL.Services.Interface
 		Task<GenericResponseApi<bool>> CreateVacancy(CreateVacancyDTO createVacancy);
 		Task<GenericResponseApi<bool>> UpdateVacancy(UpdateVacancyDTO updateVacancy);
 		Task<GenericResponseApi<bool>> DeleteVacancy(int Id);
-		Task<GenericResponseApi<bool>> DeleteCompanyOwnedVacancy(int Id, int companyId);
+		Task<GenericResponseApi<bool>> DeleteCompanyOwnedVacancy(int vacancyId, int companyId);
 	}
 }

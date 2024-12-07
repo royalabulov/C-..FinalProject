@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	[ApiController]
 	public class AdvertisingController : ControllerBase
 	{
@@ -27,7 +27,7 @@ namespace FinalProject.API.Controllers
 		}
 
 
-		[HttpGet]
+		[HttpGet("companyPremiumTimeLeft")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Company")]
 		public async Task<IActionResult> GetCompanyPremium(int companyId)
 		{
@@ -35,7 +35,7 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
-		[HttpPost("[action]")]
+		[HttpPost("advertising")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Company")]
 		public async Task<IActionResult> CreateAdvertising(CreateAdvertisingDTO createAdvertising)
 		{

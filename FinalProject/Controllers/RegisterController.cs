@@ -52,6 +52,13 @@ namespace FinalProject.API.Controllers
 			return StatusCode(result.StatusCode, result);
 		}
 
+		[HttpPost("moderator")]
+		public async Task<IActionResult> CreateModerator(ModeratorDTO moderatorDTO)
+		{
+			var result = await registerService.CreateModerators(moderatorDTO);
+			return StatusCode(result.StatusCode, result);
+		}
+
 		[HttpPost("assign-role-to-user")]
 		//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 		public async Task<IActionResult> AssignRoleToUserAsync(string Id, string[] roles)

@@ -1,6 +1,7 @@
 ﻿using FinalProject.BLL.Models.DTOs.VacantProfileDTOs;
 using FinalProject.BLL.Services.Implementation;
 using FinalProject.BLL.Services.Interface;
+using FinalProject.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	[ApiController]
 	public class VacantController : ControllerBase
 	{
@@ -20,7 +21,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet("[action]")]
+		[HttpGet("vacant")]
 		public async Task<IActionResult> GetAll()
 		{
 			var result = await vacantProfileService.AllVacant();
@@ -30,7 +31,7 @@ namespace FinalProject.API.Controllers
 
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPost("[action]")]
+		[HttpPost("vacant")]
 		public async Task<IActionResult> Create(CreateVacantProfileDTO createVacantProfile)
 		{
 			var result = await vacantProfileService.CreateVacantProfile(createVacantProfile);
@@ -38,7 +39,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPut("[action]")]
+		[HttpPut("vacant")]
 		public async Task<IActionResult> UpdateVacant(UpdateVacantProfileDTO updateVacantProfile)
 		{
 			var result = await vacantProfileService.UpdateVacantProfile(updateVacantProfile);
@@ -46,7 +47,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpDelete("{id:int}")]
+		[HttpDelete("vacant{id:int}")]
 		public async Task<IActionResult> Delete(int id)
 		{
 			var result = await vacantProfileService.DeleteVacant(id);

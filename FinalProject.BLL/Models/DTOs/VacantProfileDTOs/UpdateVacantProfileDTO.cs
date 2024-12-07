@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinalProject.BLL.Models.DTOs.VacantProfileDTOs
 {
-	public class UpdateVacantProfileDTO//admin ayri update eliye biler yoxsa elemesin heç
+	public class UpdateVacantProfileDTO
 	{
 		public int Id { get; set; }
 		public string FirstName { get; set; }

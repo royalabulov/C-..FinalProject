@@ -97,7 +97,7 @@ namespace FinalProject.BLL.Services.Implementation
 			else
 			{
 				response.Failure("Invalid login attempt.", 401);
-				logger.LogWarning("Failed login attempt for user: {Email}", login.Email); // Uyarı logu
+				logger.LogWarning("Failed login attempt for user: {Email}", login.Email); 
 				return response;
 			}
 		} 

@@ -49,6 +49,32 @@ namespace FinalProject.DAL.Migrations
                     b.ToTable("Advertising");
                 });
 
+            modelBuilder.Entity("FinalProject.Domain.Entites.CompanyModerator", b =>
+                {
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ModeratorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CompanyId", "ModeratorId");
+
+                    b.HasIndex("ModeratorId");
+
+                    b.ToTable("CompanyModerator");
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
                 {
                     b.Property<int>("Id")
@@ -73,7 +99,7 @@ namespace FinalProject.DAL.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entites.VacantProfile", b =>
@@ -452,6 +478,25 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("FinalProject.Domain.Entites.CompanyModerator", b =>
+                {
+                    b.HasOne("FinalProject.Domain.Entities.Company", "Company")
+                        .WithMany("CompanyModerators")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProject.Domain.Entities.AppUser", "Moderator")
+                        .WithMany("companyModerators")
+                        .HasForeignKey("ModeratorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Moderator");
+                });
+
             modelBuilder.Entity("FinalProject.Domain.Entites.Subscription", b =>
                 {
                     b.HasOne("FinalProject.Domain.Entities.Company", null)
@@ -591,6 +636,8 @@ namespace FinalProject.DAL.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("VacantProfile");
+
+                    b.Navigation("companyModerators");
                 });
 
             modelBuilder.Entity("FinalProject.Domain.Entities.Category", b =>
@@ -601,6 +648,8 @@ namespace FinalProject.DAL.Migrations
             modelBuilder.Entity("FinalProject.Domain.Entities.Company", b =>
                 {
                     b.Navigation("Advertising");
+
+                    b.Navigation("CompanyModerators");
 
                     b.Navigation("Subscriptions");
 

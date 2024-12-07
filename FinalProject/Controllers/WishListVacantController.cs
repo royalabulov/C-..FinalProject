@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace FinalProject.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api")]
 	[ApiController]
 	public class WishListVacantController : ControllerBase
 	{
@@ -20,7 +20,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpGet("wishlist/{vacantProfileId}")]
+		[HttpGet("wishlist{vacantProfileId}")]
 		public async Task<IActionResult> GetWishListVacant(int vacantProfileId)
 		{
 			var result = await wishListVacant.GetVacantWishList(vacantProfileId);
@@ -28,7 +28,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-		[HttpGet("[action]")]
+		[HttpGet("allWishListVacant")]
 		public async Task<IActionResult> GetAllWishListVacant()
 		{
 			var result = await wishListVacant.GetAllVacantWishList();
@@ -36,7 +36,7 @@ namespace FinalProject.API.Controllers
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpPost("[action]")]
+		[HttpPost("vacantWishList")]
 		public async Task<IActionResult> AddVacantWishList(AddVacantWishListDTO addVacantWishListDTO)
 		{
 			var result = await wishListVacant.AddVacantWishList(addVacantWishListDTO);
@@ -45,7 +45,7 @@ namespace FinalProject.API.Controllers
 
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Vacant")]
-		[HttpDelete("wishlist/{vacantProfileId}")]
+		[HttpDelete("wishlist{vacantProfileId}")]
 		public async Task<IActionResult> RemoveWishList(int vacantProfileId,[FromQuery] int vacancyId)
 		{
 			var result = await wishListVacant.RemoveVacantWishList(vacantProfileId, vacancyId);
